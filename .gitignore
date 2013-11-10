@@ -1,0 +1,13 @@
+assets/
+protected/runtime/
+*.pydevproject
+.project
+.idea
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib

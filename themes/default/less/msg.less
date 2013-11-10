@@ -1,0 +1,51 @@
+// Всплывающее сообщение
+.messages_line {
+  position: fixed;
+  top: 30px;
+  height: 1px;
+  overflow: visible;
+  width: 100%;
+}
+
+.message_wrapper {
+  cursor: default;
+  position: relative;
+  z-index: 3;
+  margin: auto;
+  padding: 0;
+  max-width: 400px;
+  .all_transition;
+  .alert {
+    padding: 18px 14px 8px 14px;
+    margin-bottom: 0;
+  }
+  .message_footer {
+    position: absolute;
+    bottom: -20px;
+    display: block;
+    opacity: 0;
+    font-size: 11px;
+    color: @color-gray;
+    .hide_message {
+      cursor: pointer;
+      padding: 0;
+      text-align: right;
+      text-decoration: underline;
+    }
+    .all_transition
+  }
+}
+
+.message_wrapper:hover {
+  .message_footer {
+    opacity: 1;
+  }
+}
+
+// Индикатор загрузки (упрощщенное сообщение)
+.message_wrapper.loading {
+  max-width: 120px;
+  .message_footer {
+    display: none;
+  }
+}

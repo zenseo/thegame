@@ -1,0 +1,82 @@
+.my_modals(@screen:1366px) {
+  @media screen and (width: @screen) {
+    .wide_modal {
+      top: 20px;
+      left: 100px;
+      width: @screen - 200;
+      margin: 0;
+    }
+
+    .middle_modal {
+      top: 20px;
+      left: @screen/4;
+      width: @screen/2;
+      margin-left: 0 !important;
+      //      margin-left: -(@screen)/2;
+    }
+  }
+}
+
+  .my_modals(1366px)
+
+;
+  .my_modals(800px)
+
+;
+  .my_modals(1920px)
+
+;
+  .my_modals(1024px)
+
+;
+
+// Список колонок в виджете управления колонками
+.grid_columns_list .grid_columns_filter_list_item {
+  float: left;
+  width: 50%;
+  margin-bottom: 10px
+}
+
+.grid_columns_draggable_list {
+  margin: 0;
+}
+
+.grid_columns_draggable_list li {
+  cursor: move;
+  padding: 6px 6px;
+  border-left: 3px #ccc solid;
+  margin: 6px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 229px;
+  position: relative;
+}
+
+.grid_columns_draggable_list li a {
+  position: absolute;
+  top: 7px;
+  right: 0;
+}
+
+.grid_columns_draggable_list_wrapper {
+  background: #f0f0f0;
+  padding: 0 15px 10px 15px;
+}
+
+#grid_columns_draggable_list li a {
+  opacity: 0;
+  .all_transition
+}
+
+#grid_columns_draggable_list li:hover a {
+  opacity: 0.4;
+}
+
+.vertical_form_text_value {
+  margin-top: 5px;
+}
+
+.user_photo_for_crop {
+  height: 350px;
+}

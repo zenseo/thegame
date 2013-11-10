@@ -1,0 +1,102 @@
+.navbar a.brand {
+  padding: 7px;
+  margin: 0;
+}
+
+.brand>img {
+  height: 25px;
+}
+
+/*Навигатор по умолчанию имеет большой отступ сверху*/
+ul.breadcrumb {
+  margin: 0;
+  background: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  padding: 5px 0;
+  position: fixed;
+  top: 44px;
+  left: 20px;
+  z-index: 2;
+}
+
+// Грид
+
+.index-grid-view {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  tbody {
+    display: block;
+    height: 300px;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  thead {
+    display: block;
+  }
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+  .summary {
+    margin-top: 7px;
+    margin-bottom: 0;
+  }
+  .pagination, .index-grid-element {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+}
+
+.grid_id_column {
+  .concrete-width(40px);
+  text-align: center !important;
+}
+
+.grid_checkbox_column {
+  .concrete-width(30px);
+  text-align: center !important;
+}
+
+.grid_small_column {
+  width: 60px;
+}
+
+.grid_middle_column {
+  .concrete-width(140px);
+}
+
+.filters > td.grid_middle_column {
+  //  padding: 8px 0 !important;
+  input, select {
+    width: 126px;
+  }
+  .filter-container {
+    padding: 0 !important;
+  }
+}
+
+th.grid_middle_column {
+  //  padding: 8px 0 !important;
+}
+
+.grid_normal_column {
+  width: 180px;
+}
+
+.grid_big_column {
+  width: 240px;
+}
+
+// Убираем стандартный индикатор загрузки
+.grid-view-loading {
+  background: none !important;
+}
+
+i.fa {
+  display: inline-block;
+  margin-right: 10px;
+  width: 12px;
+  text-align: center;
+}

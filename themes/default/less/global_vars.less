@@ -1,0 +1,21 @@
+/* Цвета */
+@color-gray: #888888;
+
+/* Примеси */
+.all_transition(@duration:250ms) {
+  -webkit-transition: all @duration ease-in-out;
+  -moz-transition: all @duration ease-in-out;
+  -ms-transition: all @duration ease-in-out;
+  -o-transition: all @duration ease-in-out;
+  transition: all @duration ease-in-out;
+}
+
+.half-transparent-background(@opacity:0.5) {
+  background: rgba(255, 255, 255, @opacity);
+}
+
+.concrete-width(@value:100px) {
+  min-width: @value !important;
+  max-width: @value !important;
+  width: @value !important;
+}
