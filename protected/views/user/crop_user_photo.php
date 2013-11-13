@@ -16,26 +16,12 @@ $this->beginWidget('bootstrap.widgets.TbModal', array(
 			Выбрать изображение
 			</span>
 	</div>
-	<div id="photo_container" style="display: none">
+	<div id="photo_container" style="display: none; text-align: center">
 		<img id="crop_photo" class="user_photo_for_crop" src=""/>
-
-		<div class="btn btn-primary" onclick="sendUserPhotoSelection()">Применить</div>
 	</div>
-	<div id="avatar_container" style="display: none">
-		<div class="row-fluid">
-			<div class="span6">
-				<img id="crop_avatar" class="user_photo_for_crop" src=""/>
-			</div>
-			<div class="span6">
-				<div id="avatar_preview_container" style="width: 100px;height: 100px; overflow: hidden;">
-					<img id="avatar_preview" src="" alt="Миниатюра"/>
-				</div>
-			</div>
-		</div>
-
-		<div class="btn btn-primary" onclick="sendUserAvatarSelection()">Аватар</div>
+	<div id="avatar_container" style="display: none; text-align: center">
+		<img id="crop_avatar" class="user_photo_for_crop" src=""/>
 	</div>
-
 
 	<!-- Форма загрузки изображения -->
 	<form id="upload_user_photo_form" method="post" enctype="multipart/form-data" action="/user/uploadPhoto/<?php echo $model->id ?>">
@@ -43,6 +29,11 @@ $this->beginWidget('bootstrap.widgets.TbModal', array(
 	</form>
 
 
+</div>
+<div class="modal-footer">
+	<div id="lets_crop_user_photo" style="display: none" class="btn btn-primary" onclick="sendUserPhotoSelection()">Применить</div>
+	<div id="lets_crop_avatar" style="display: none" class="btn btn-primary" onclick="sendUserAvatarSelection()">Применить</div>
+	<div class="btn" data-dismiss="modal">Отмена</div>
 </div>
 <?php $this->endWidget(); ?>
 
@@ -65,9 +56,14 @@ $this->beginWidget('bootstrap.widgets.TbModal', array(
 		$('#crop_photo').hide();
 		$('#crop_photo_modal').modal('hide');
 		$('#upload_user_photo_message').html('');
-		$('#choose_file').show();
+		$('#begin_container').show();
 		$('#crop_photo').attr('src', '');
 		$('#crop_photo').attr('style', '');
+		$('#crop_avatar').attr('src', '');
+		$('#crop_avatar').attr('style', '');
+		$('#avatar_container').hide();
+		$('#lets_crop_avatar').hide();
+		$('#lets_crop_user_photo').hide();
 		photo_jcrop_api.destroy();
 		avatar_jcrop_api.destroy();
 	}
@@ -82,6 +78,8 @@ $this->beginWidget('bootstrap.widgets.TbModal', array(
 		$('#upload_user_photo_message').html('');
 		$('#crop_photo').attr('src', data.image);
 		$('#photo_container').show();
+		$('#lets_crop_avatar').hide();
+		$('#lets_crop_user_photo').show();
 		$('#crop_photo').Jcrop({
 			bgColor: 'white',
 			aspectRatio: user_photo_aspect_ratio,
@@ -99,6 +97,8 @@ $this->beginWidget('bootstrap.widgets.TbModal', array(
 		$('#begin_container').hide();
 		$('#photo_container').hide();
 		$('#avatar_container').show();
+		$('#lets_crop_avatar').show();
+		$('#lets_crop_user_photo').hide();
 		$('#crop_avatar').attr('src', data.image);
 		$('#avatar_preview').attr('src', data.image);
 		corrective = 1;
@@ -108,28 +108,11 @@ $this->beginWidget('bootstrap.widgets.TbModal', array(
 			bgColor: 'white',
 			aspectRatio: user_avatar_aspect_ratio,
 			minSize: min_size,
-			setSelect: set_select,
-			onChange: updatePreview,
-			onSelect: updatePreview
+			setSelect: set_select
 		}, function () {
 			avatar_jcrop_api = this;
 		});
 	}
-
-	function updatePreview(c) {
-		if (parseInt(c.w) > 0) {
-			var rx = user_photo_width / c.w;
-			var ry = user_photo_height / c.h;
-
-			$('#avatar_preview').css({
-				width: Math.round(rx) + 'px',
-				height: Math.round(ry) + 'px',
-				marginLeft: '-' + Math.round(rx * c.x) + 'px',
-				marginTop: '-' + Math.round(ry * c.y) + 'px'
-			});
-		}
-	}
-	;
 
 	function sendUserPhotoSelection() {
 		var coordinates = photo_jcrop_api.tellSelect();
@@ -162,13 +145,15 @@ $this->beginWidget('bootstrap.widgets.TbModal', array(
 				}
 			}, function () {
 				closeThisModal();
+				$('#user_photo').attr('src', '');
+				$('#user_photo').attr('src', this.image);
 			}
 		)
 	}
 
 	$(function () {
 		$('body').on('change', '#user_photo_file', function () {
-			$('#choose_file').hide();
+			$('#begin_container').hide();
 			$('#upload_user_photo_message').html('Загрузка...');
 			$("#upload_user_photo_form").ajaxForm({
 				dataType: 'json',

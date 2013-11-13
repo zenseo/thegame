@@ -21,6 +21,8 @@ $this->breadcrumbs = array(
 	?>
 	<img id="user_photo" src="<?php echo $photo_url ?>"/>
 	<?php $this->renderPartial('crop_user_photo', array('model' => $model)); ?>
+	<br/>
+	<br/>
 	<div class="btn btn-primary" onclick="$('#crop_photo_modal').modal('show')">Загрузить фото</div>
 </div>
 <div class="span9">

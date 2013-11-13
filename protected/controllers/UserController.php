@@ -147,7 +147,8 @@ class UserController extends Controller
 		$user->save();
 		echo CJSON::encode(array(
 			'status' => 200,
-			'image' => Yii::app()->params['user_photos_base_url'] . $user->avatar . '?' . time(),
+			'ava' => Yii::app()->params['user_photos_base_url'] . $user->avatar . '?' . time(),
+			'image' => Yii::app()->params['user_photos_base_url'] . $user->photo . '?' . time(),
 		));
 	}
 

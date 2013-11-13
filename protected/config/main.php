@@ -38,7 +38,6 @@ if (YII_APP_MODE == 'dev') {
 		'gii' => array(
 			'class' => 'system.gii.GiiModule',
 			'password' => 'asdasd',
-			// If removed, Gii defaults to localhost only. Edit carefully to taste.
 			'ipFilters' => array(
 				'127.0.0.1',
 				'::1'
@@ -46,7 +45,8 @@ if (YII_APP_MODE == 'dev') {
 			'newFileMode' => 0644,
 			'newDirMode' => 0755,
 			'generatorPaths' => array(
-				'bootstrap.gii'
+//				'bootstrap.gii',
+				'ext.theGameGenerator',
 			),
 		),
 	);
