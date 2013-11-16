@@ -23,16 +23,17 @@ $this->breadcrumbs = array(
 	<?php $this->renderPartial('crop_user_photo', array('model' => $model)); ?>
 	<br/>
 	<br/>
+
 	<div class="btn btn-primary" onclick="$('#crop_photo_modal').modal('show')">Загрузить фото</div>
 </div>
 <div class="span9">
-	<?php $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
-		'id' => 'user_form',
-		'type' => 'horizontal',
-		'enableAjaxValidation' => false,
-	)); ?>
+
 	<h3><?php echo $model->fio ?>
-		<div id="save_profile_button" style="display: none;" class="btn btn-success">Сохранить изменения</div>
+		<div id="save_profile_button" style="display: none;"
+			 class="btn btn-success"
+			 onclick="ajaxForm('user_form', 'Сохранение...')"
+			>Сохранить изменения
+		</div>
 	</h3>
 	<script>
 		$(function () {
@@ -45,11 +46,16 @@ $this->breadcrumbs = array(
 	<ul class="nav nav-tabs" id="myTab">
 		<li class="active"><a href="#main_data" data-toggle="tab">Основное</a></li>
 		<li><a href="#personal_data" data-toggle="tab">Личные данные</a></li>
-		<li><a href="#change_password" data-toggle="tab">Смена пароля</a></li>
-		<li><a href="#access_settings" data-toggle="tab">Настройки доступа</a></li>
+		<li><a href="#other" data-toggle="tab">Прочее</a></li>
 	</ul>
-
+	<?php $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
+		'id' => 'user_form',
+		'type' => 'horizontal',
+		'action' => '/user/update/' . $model->id,
+		'enableAjaxValidation' => false,
+	)); ?>
 	<div class="tab-content">
+
 		<!-- Основная ифнормация-->
 		<div class="tab-pane active" id="main_data">
 
@@ -105,14 +111,21 @@ $this->breadcrumbs = array(
 			)); ?>
 
 			<?php echo $form->textFieldRow($model, 'birth_date', array('class' => 'span5')); ?>
-			<?php $this->endWidget(); ?>
+
 
 		</div>
-		<!-- Смена пароля -->
-		<div class="tab-pane" id="change_password">...</div>
 		<!-- Настройки доступа -->
-		<div class="tab-pane" id="access_settings">...</div>
+		<div class="tab-pane" id="other">
+			<div class="btn btn-primary"
+				 onclick="showModal('change_user_password_modal')"
+				>Сменить пароль
+			</div>
+		</div>
+
 	</div>
-
+	<?php $this->endWidget(); ?>
 </div>
-
+<?php
+$this->renderPartial('modals/_change_password_modal', array(
+	'model' => $model,
+));

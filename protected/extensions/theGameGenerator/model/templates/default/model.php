@@ -1,6 +1,4 @@
 <?php
-// @todo Разобраться с базовым классом и заняться оптимизацией модели
-// @todo Найти способ прегенерировать даты и мультиселекты
 $markers = array();
 $data = array();
 
@@ -13,11 +11,12 @@ $columnsComment = '';
 //var_dump($columns);exit;
 foreach ($columns as $column) {
 	$columnsComment .= '
- * @property ' . $column->type . ' $' . $column->name .' '. $column->comment;
+ * @property ' . $column->type . ' $' . $column->name . ' ' . $column->comment;
 }
 $markers[] = 'columnsCommentPlaceholder';
 $data[] = $columnsComment;
 
+$gridMultiSelects = '';
 // Генерим PHP doc для зависимостей
 if (!empty($relations)) {
 	$relationsComment = '
@@ -103,14 +102,33 @@ $markers[] = '"AttributeDefaultPlaceholder"';
 $data[] = $attributeDefault;
 
 
+// Даты для конвертации
+$DatesForConvert = '';
+$dateTypes = array(
+	'datetime',
+	'timestamp',
+	'date',
+);
+foreach ($columns as $column) {
+
+	if (isset($column->dbType) && (in_array(strtolower($column->dbType), $dateTypes))) {
+		$DatesForConvert .= "'{$column->name}',
+			";
+	}
+}
+$markers[] = '"DatesForConvert"';
+$data[] = $DatesForConvert;
+
+
 // Поиск
 $search = '';
 foreach ($columns as $name => $column) {
-	if ($column->type === 'string') {
-		$search .= "\t\t\$criteria->compare('$name',\$this->$name,true);\n";
+	// Даты пропускаем, потому что для них есть автоматический сборщик поиска
+	if (isset($column->dbType) && (in_array(strtolower($column->dbType), $dateTypes))) {
+		continue;
 	}
-	// Пропускаем даты... Для них у нас в файле dummy.php припасено сладенькое...
-	else if ($column->type === 'date' || $column->type === 'timestamp') {
+	else if ($column->type === 'string') {
+		$search .= "\t\t\$criteria->compare('$name',\$this->$name,true);\n";
 	}
 	else {
 		$search .= "\t\t\$criteria->compare('$name',\$this->$name);\n";
@@ -132,7 +150,8 @@ if ($connectionId != 'db') {
 	}
 	';
 	$data[] = $dbConnect;
-}else{
+}
+else {
 	$data[] = '// =)';
 }
 

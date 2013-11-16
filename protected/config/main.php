@@ -67,6 +67,8 @@ else {
 }
 
 $config = array(
+	'sourceLanguage'=>'ru',
+	'language' => 'ru',
 	'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
 	'name' => 'The Game 2',
 	'preload' => array(

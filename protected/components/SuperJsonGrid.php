@@ -272,15 +272,14 @@ class SuperJsonGrid extends TbJsonGridView
 			/**
 			 * Появление функций при нажатии чекбокса
 			 */
-			$('#{$this->id} .show-on-checked').hide();
-			$('body').on('change', '#{$this->id} td.{$this->checkboxColumn["class"]}>:checkbox, #{$this->checkboxColumn["main_checkbox_id"]}', function () {
-				var checkboxes = $('#{$this->id} td.{$this->checkboxColumn["class"]}>:checkbox');
-				if(checkboxes.prop('checked')){
+			setInterval(function(){
+				var checkboxes = $('#{$this->id} td.{$this->checkboxColumn["class"]}>:checked');
+				if(checkboxes.length){
 					$('#{$this->id} .show-on-checked').show();
 				}else{
 					$('#{$this->id} .show-on-checked').hide();
 				}
-			});
+			}, 100)
 		});
 		</script>";
 	}

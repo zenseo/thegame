@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS test1.main_menu (
   UNIQUE INDEX id_UNIQUE (id ASC))
   ENGINE = InnoDB
 COMMENT = 'Главное меню приложения';
-INSERT INTO test1.main_menu (id, parent, label, rule, action, sort, active) VALUES (1, NULL, 'Клиенты', '', 'client/index', 1, 1);
+INSERT INTO test1.main_menu (id, parent, label, rule, action, sort, active) VALUES (1, NULL, 'Клиенты', 'indexCustomer', 'customer/index', 1, 1);
 INSERT INTO test1.main_menu (id, parent, label, rule, action, sort, active) VALUES (2, NULL, 'Задачи', NULL, 'task/index', 2, 1);
 INSERT INTO test1.main_menu (id, parent, label, rule, action, sort, active) VALUES (3, NULL, 'История', NULL, 'history/index', 3, 1);
 INSERT INTO test1.main_menu (id, parent, label, rule, action, sort, active) VALUES (4, NULL, 'Отчеты', NULL, 'report/index', 4, 1);

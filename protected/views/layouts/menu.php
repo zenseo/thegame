@@ -32,7 +32,7 @@ $this->widget('bootstrap.widgets.TbNavbar', array(
 					'items' => array(
 						array(
 							'label' => '<i class="fa fa-user"></i>Профиль',
-							'url' => Yii::app()->CreateUrl('site/logout')
+							'url' => Yii::app()->CreateUrl('user/'.Yii::app()->user->id)
 						),
 						array(
 							'label' => '<i class="fa fa-info"></i>Помощь',

@@ -1,14 +1,34 @@
 <?php
 
 /**
- * Это класс модели для таблицы "tableNamePlaceholder".
+ * Это класс модели для таблицы "customer".
  *
- * Ниже описаны доступные поля для таблицы 'tableNamePlaceholder':
- * columnsCommentPlaceholder
+ * Ниже описаны доступные поля для таблицы 'customer':
  *
- * relationsCommentPlaceholder
+ * @property integer $id Идентификатор клиента
+ * @property string $name Название
+ * @property string $phone Телефон
+ * @property string $email Электронная почта
+ * @property string $address Адрес
+ * @property string $gis_id Идентификатор 2gis
+ * @property string $created Создан
+ * @property string $updated Последнее обновление
+ * @property integer $responsible Ответсвенный
+ * @property string $note Коментарий
+ * @property integer $in_work В работе
+ * @property integer $removed Удален
+ * @property integer $sales_status Статус продаж
+ * @property integer $creator Кто добавил
+ * @property integer $updater Кто последний раз обновил
+ *
+ *
+ * Ниже описаны доступные для модели зависимости:
+ * @property LogCustomer[] $logCustomers
+ * @property RelationCustomerContact[] $relationCustomerContacts
+ * @property Requisites[] $requisites
+ * @property Task[] $tasks
  */
-class ClassNamePlaceholder extends ActiveRecord
+class Customer extends ActiveRecord
 {
 
 	/**
@@ -18,11 +38,11 @@ class ClassNamePlaceholder extends ActiveRecord
 	 * вместо ... => 'Просмотр карточки'
 	 */
 	public static $rbac_config = array(
-		'viewClassNamePlaceholder' => 'Просмотр карточки',
-		'indexClassNamePlaceholder' => 'Просмотр списка',
-		'createClassNamePlaceholder' => 'Создание',
-		'updateClassNamePlaceholder' => 'Обновление',
-		'deleteClassNamePlaceholder' => 'Удаление',
+		'viewCustomer' => 'Просмотр карточки',
+		'indexCustomer' => 'Просмотр списка',
+		'createCustomer' => 'Создание',
+		'updateCustomer' => 'Обновление',
+		'deleteCustomer' => 'Удаление',
 	);
 
 
@@ -31,7 +51,7 @@ class ClassNamePlaceholder extends ActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'tableNamePlaceholder';
+		return 'customer';
 	}
 
 	/**
@@ -42,12 +62,35 @@ class ClassNamePlaceholder extends ActiveRecord
 		// NOTE: вам нужно лишь защитить атрибуты, которые будет вводить пользователь
 		// можете удалить лишнее
 		return array(
-			"ModelRulesPlaceholder",
+			array(
+				'name',
+				'required'
+			),
+			array(
+				'responsible, in_work, removed, sales_status, creator, updater',
+				'numerical',
+				'integerOnly' => true
+			),
+			array(
+				'name, phone, email, address',
+				'length',
+				'max' => 255
+			),
+			array(
+				'gis_id',
+				'length',
+				'max' => 20
+			),
+			array(
+				'updated, note',
+				'safe'
+			),
+
 
 			// Следующее правило будет использовано в search().
 			// @todo Пожалуйста удалите атрибуты, которые не должны экранироваться в поиске
 			array(
-				'SearchRulesPlaceholder',
+				'id, name, phone, email, address, gis_id, created, updated, responsible, note, in_work, removed, sales_status, creator, updater',
 				'safe',
 				'on' => 'search'
 			),
@@ -62,7 +105,27 @@ class ClassNamePlaceholder extends ActiveRecord
 		// NOTE: возможно вам нужно настроить эти зависимости.
 		// Классы для зависимостей были сгенерированы автоматически! Проверьте их наличие.
 		return array(
-			"RelationRulesPlaceholder"
+			'logCustomers' => array(
+				self::HAS_MANY,
+				'LogCustomer',
+				'customer'
+			),
+			'relationCustomerContacts' => array(
+				self::HAS_MANY,
+				'RelationCustomerContact',
+				'customer'
+			),
+			'requisites' => array(
+				self::HAS_MANY,
+				'Requisites',
+				'customer'
+			),
+			'tasks' => array(
+				self::HAS_MANY,
+				'Task',
+				'customer'
+			),
+
 		);
 	}
 
@@ -72,7 +135,22 @@ class ClassNamePlaceholder extends ActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			"AttributeLabelsPlaceholder"
+			'id' => 'Идентификатор клиента',
+			'name' => 'Название',
+			'phone' => 'Телефон',
+			'email' => 'Электронная почта',
+			'address' => 'Адрес',
+			'gis_id' => 'Идентификатор 2gis',
+			'created' => 'Создан',
+			'updated' => 'Последнее обновление',
+			'responsible' => 'Ответсвенный',
+			'note' => 'Коментарий',
+			'in_work' => 'В работе',
+			'removed' => 'Удален',
+			'sales_status' => 'Статус продаж',
+			'creator' => 'Кто добавил',
+			'updater' => 'Кто последний раз обновил',
+
 		);
 	}
 
@@ -82,7 +160,22 @@ class ClassNamePlaceholder extends ActiveRecord
 	public function attributeDefault()
 	{
 		return array(
-			"AttributeDefaultPlaceholder"
+			'id',
+			'name',
+			'phone',
+			'email',
+			'address',
+			'gis_id',
+			'created',
+			'updated',
+			'responsible',
+			'note',
+			'in_work',
+			'removed',
+			'sales_status',
+			'creator',
+			'updater',
+
 		);
 	}
 
@@ -95,7 +188,9 @@ class ClassNamePlaceholder extends ActiveRecord
 	 *
 	 */
 	public $dates_for_convert = array(
-		"DatesForConvert"
+		'created',
+		'updated',
+
 	);
 
 	/**
@@ -157,7 +252,20 @@ class ClassNamePlaceholder extends ActiveRecord
 	public function search()
 	{
 		$criteria = new CDbCriteria;
-"SearchPlaceholder";
+		$criteria->compare('id', $this->id);
+		$criteria->compare('name', $this->name, true);
+		$criteria->compare('phone', $this->phone, true);
+		$criteria->compare('email', $this->email, true);
+		$criteria->compare('address', $this->address, true);
+		$criteria->compare('gis_id', $this->gis_id, true);
+		$criteria->compare('responsible', $this->responsible);
+		$criteria->compare('note', $this->note, true);
+		$criteria->compare('in_work', $this->in_work);
+		$criteria->compare('removed', $this->removed);
+		$criteria->compare('sales_status', $this->sales_status);
+		$criteria->compare('creator', $this->creator);
+		$criteria->compare('updater', $this->updater);
+
 
 		// Автоматическое добавление поиска по датам на основе
 		// массива $this->dates_for_convert
@@ -175,7 +283,7 @@ class ClassNamePlaceholder extends ActiveRecord
 	 * Обратите внимание, что вы должны иметь этот метод во всех ваших CActiveRecord потомках!
 	 *
 	 * @param string $className имя класса активной записи.
-	 * @return ClassNamePlaceholder статический класс модели
+	 * @return Customer статический класс модели
 	 */
 	public static function model($className = __CLASS__)
 	{
@@ -193,8 +301,7 @@ class ClassNamePlaceholder extends ActiveRecord
 	}
 
 
-	public $alternateConnectPlaceholder;
-
+	// =)
 
 
 	/**
@@ -215,8 +322,9 @@ class ClassNamePlaceholder extends ActiveRecord
 	 * @param $attribute - атрибут модели, который превращаем в ссылку
 	 * @return string - html-разметка ссылки, которая будет вставлена как значение атрибута в гриде
 	 */
-	public function getMoreLink($attribute){
-		return '<a target="_blank" href="/'.strtolower(__CLASS__).'/'. $this->id .'">'. $this->$attribute .'</a>';
+	public function getMoreLink($attribute)
+	{
+		return '<a target="_blank" href="/' . strtolower(__CLASS__) . '/' . $this->id . '">' . $this->$attribute . '</a>';
 	}
 
 	/**
@@ -245,7 +353,7 @@ class ClassNamePlaceholder extends ActiveRecord
 						'name' => 'id',
 						'type' => 'raw',
 						'header' => '#',
-						'value' =>'$data->getMoreLink("'.$row.'")',
+						'value' => '$data->getMoreLink("' . $row . '")',
 						'htmlOptions' => array(
 							'class' => 'grid_id_column'
 						)
@@ -309,7 +417,22 @@ class ClassNamePlaceholder extends ActiveRecord
 			'main' => array(
 				'label' => 'Основные',
 				'childs' => array(
-					"AttributeDefaultPlaceholder"
+					'id',
+					'name',
+					'phone',
+					'email',
+					'address',
+					'gis_id',
+					'created',
+					'updated',
+					'responsible',
+					'note',
+					'in_work',
+					'removed',
+					'sales_status',
+					'creator',
+					'updater',
+
 				)
 			),
 			'other' => array(

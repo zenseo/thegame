@@ -16,5 +16,5 @@ Yii::import('gii.generators.crud.CrudGenerator');
  */
 class TheGameGenerator extends CrudGenerator
 {
-	public $codeModel = 'ext.theGameGenerator.theGame.BootstrapCode';
+	public $codeModel = 'ext.theGameGenerator.theGame.TheGameCode';
 }

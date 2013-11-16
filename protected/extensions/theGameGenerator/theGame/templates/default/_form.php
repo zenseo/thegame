@@ -1,42 +1,43 @@
 <?php
-/**
- * The following variables are available in this template:
- * - $this: the BootCrudCode object
- */
-?>
-<?php echo '
-/**
- * @var $model ' . $this->modelClass . '
- * @var $form TbActiveForm
- */';
-?>
-<?php
-echo "<?php \$form=\$this->beginWidget('ext.bootstrap.widgets.TbActiveForm',array(
-	'id'=>'" . strtolower($this->modelClass) . "_form',
-	'enableAjaxValidation'=>false,
-)); ?>\n"; ?>
+$markers = array();
+$data = array();
+// Больше информации можно получить из var_dump
+//var_dump($this);exit;
 
-<p class="help-block">Поля с <span class="required">*</span> обязательны для заполнения.</p>
+// Добавляем название класса контроллера в нижнем регистре
+$markers[] = 'LowerCClass';
+$data[] = strtolower($this->controllerClass);
 
-<?php echo "<?php echo \$form->errorSummary(\$model); ?>\n"; ?>
+// Добавляем название класса контроллера для начала
+$markers[] = 'ControllerClass';
+$data[] = $this->controllerClass;
 
-<?php
+// Добавляем название класса модели
+$markers[] = 'ModelClass';
+$data[] = $this->modelClass;
+
+// Добавляем название класса модели в нижнем регистре
+$markers[] = 'LowerMClass';
+$data[] = strtolower($this->modelClass);
+
+
+// Генерируем форму
+$markers[] = 'BootstrapForm';
+$BootstrapForm = '';
+
 foreach ($this->tableSchema->columns as $column) {
 	if ($column->autoIncrement) {
 		continue;
 	}
+	$BootstrapForm .= "<?php echo {$this->generateActiveRow($this->modelClass, $column)}; ?>\n";
 	?>
-	<?php echo "<?php echo " . $this->generateActiveRow($this->modelClass, $column) . "; ?>\n"; ?>
-
 <?php
 }
-?>
-<div class="form-actions">
-	<?php echo "<?php \$this->widget('ext.bootstrap.widgets.TbButton', array(
-			'buttonType'=>'submit',
-			'type'=>'primary',
-			'label'=>\$model->isNewRecord ? 'Создать' : 'Сохранить',
-		)); ?>\n"; ?>
-</div>
+$data[] = $BootstrapForm;
 
-<?php echo "<?php \$this->endWidget(); ?>\n"; ?>
+
+// Загружаем шаблончик
+$tpl = file_get_contents(dirname(__FILE__).'/tpl/_form.php');
+
+// Замещаем маркеры и выводим зрителям =)
+echo str_replace($markers, $data, $tpl);

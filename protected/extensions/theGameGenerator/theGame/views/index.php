@@ -18,9 +18,9 @@ $('#{$class}_model').bind('keyup change', function(){
 });
 ");
 ?>
-<h1>Bootstrap Generator</h1>
+<h1>Генератор Игры</h1>
 
-<p>This generator generates a controller and views that implement CRUD operations for the specified data model.</p>
+<p>Этот генератор генерирует год для CRUD операций для заданного AR классаф.</p>
 
 <?php
 /** @var CCodeForm $form */
@@ -30,9 +30,7 @@ $form = $this->beginWidget('CCodeForm', array('model' => $model)); ?>
 	<?php echo $form->labelEx($model, 'model'); ?>
 	<?php echo $form->textField($model, 'model', array('size' => 65)); ?>
 	<div class="tooltip">
-		Model class is case-sensitive. It can be either a class name (e.g. <code>Post</code>)
-		or the path alias of the class file (e.g. <code>application.models.Post</code>).
-		Note that if the former, the class must be auto-loadable.
+		Класс чувствителен к регистру.
 	</div>
 	<?php echo $form->error($model, 'model'); ?>
 </div>
@@ -41,17 +39,8 @@ $form = $this->beginWidget('CCodeForm', array('model' => $model)); ?>
 	<?php echo $form->labelEx($model, 'controller'); ?>
 	<?php echo $form->textField($model, 'controller', array('size' => 65)); ?>
 	<div class="tooltip">
-		Controller ID is case-sensitive. CRUD controllers are often named after
-		the model class name that they are dealing with. Below are some examples:
-		<ul>
-			<li><code>post</code> generates <code>PostController.php</code></li>
-			<li><code>postTag</code> generates <code>PostTagController.php</code></li>
-			<li><code>admin/user</code> generates <code>admin/UserController.php</code>.
-				If the application has an <code>admin</code> module enabled,
-				it will generate <code>UserController</code> (and other CRUD code)
-				within the module instead.
-			</li>
-		</ul>
+		Контроллер чувствителен к регистру. Контроллеры обычно имеют похожие имена
+		с моделями, которые они обслуживают
 	</div>
 	<?php echo $form->error($model, 'controller'); ?>
 </div>
@@ -60,8 +49,7 @@ $form = $this->beginWidget('CCodeForm', array('model' => $model)); ?>
 	<?php echo $form->labelEx($model, 'baseControllerClass'); ?>
 	<?php echo $form->textField($model, 'baseControllerClass', array('size' => 65)); ?>
 	<div class="tooltip">
-		This is the class that the new CRUD controller class will extend from.
-		Please make sure the class exists and can be autoloaded.
+		Это клас, который будет расширять будущий контроллер.
 	</div>
 	<?php echo $form->error($model, 'baseControllerClass'); ?>
 </div>

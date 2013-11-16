@@ -23,15 +23,91 @@ function simpleJson(url, data, onSuccess) {
 		dataType: "json",
 		url: url,
 		data: dataJson,
+		complete: function () {
+		},
 		success: function (data) {
-			if (onSuccess) {
-				onSuccess.call(data);
+			if (data.redirect) {
+				hideMessage();
+				window.location.href = data.redirect;
+			}
+			if (data.status == 200) {
+				if (onSuccess) {
+					onSuccess.call(data);
+				}
+				else {
+					showMessage('success', data.message);
+				}
 			}
 			else {
-				showMessage(data.status == 200 ? 'success' : 'error', data.message);
+				showMessage('error', data.message);
 			}
 		}
 	});
+}
+
+function ajaxForm(id_form, ajaxMessage, onSuccess) {
+	if (ajaxMessage) {
+		ajaxmessage = ajaxMessage;
+	}
+	$("#" + id_form).ajaxForm({
+		dataType: 'json',
+		success: function (data) {
+			if (data.redirect) {
+				hideMessage();
+				window.location.href = data.redirect;
+			}
+			if (data.status == 200) {
+				if (onSuccess) {
+					onSuccess.call(data);
+				}
+				else {
+					showMessage('success', data.message);
+				}
+			}
+			else {
+				showMessage('error', data.message);
+			}
+
+		},
+		complete: function () {
+		}
+	}).submit();
+}
+
+/**
+ * Посылает на сервер запрос на удаление записей.
+ * @param action
+ * @param grid_id
+ */
+function deleteRecords(action, grid_id) {
+	// Выбираем все отмеченые чекбоксы
+	var records = $('#' + grid_id + ' td > :checked');
+	var ids = [];// Формируем на их основе массив идентификаторов для удаления
+	records.each(function () {
+		ids.push($(this).val());
+	});
+
+	// Если есть элементы для удаления
+	if (ids.length) {
+		// Спрашиваем у пользователя действительно ли он хочет их удалить и...
+		if (confirm('Для удаления выбрано ' + ids.length + ' записей. Продолжить?')) {
+			// Посылаем запрос на удаление записей.
+			ajaxmessage = 'Удаление...';
+			simpleJson(action, {ids: ids}, function () {
+				showMessage('success', this.message);
+				records.each(function () {// Удаляем эти записи
+					$(this).parent().parent().remove();
+				});
+			});
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		showMessage('error', 'Не выбрано ни одной записи!');
+	}
+	//	return false;
 }
 
 /**
@@ -65,7 +141,7 @@ function ajaxLoad(element, url, data, onSuccess) {
  */
 
 // Общая переменная для бинда таймаута скрытия сообщения
-var message_life = 5;
+var message_life;
 
 // Общая переменная для текущего класса сообщения (чтобы можно было почистить)
 var current_alert_class = '';
@@ -77,11 +153,11 @@ var current_alert_class = '';
  * @param lifetime - время жизни сообщения (количество секунд - сколько это сообщение будет показываться на экране)
  */
 function showMessage(type, text, lifetime) {
+
 	// первым делом чистим таймаут скрытия и
 	// немедленно скрываем предыдущее сообщение на всякий случай
 	clearTimeout(message_life);
-	$('#message_body').removeClass(current_alert_class);
-	$("#message_wrapper").hide();
+	hideMessage();
 
 	// если время жизни сообщения явно не указано
 	// то оно живет 5 секунд
@@ -109,7 +185,6 @@ function showMessage(type, text, lifetime) {
 
 	// Ставим таймаут на скрытие сообщения
 	message_life = setTimeout(function () {
-		$('#message_body').removeClass(types[type]);
 		hideMessage();
 	}, lifetime);
 
@@ -121,7 +196,6 @@ function showMessage(type, text, lifetime) {
 	$('#message_wrapper').mouseleave(function () {
 		// Ставим таймаут на скрытие сообщения
 		message_life = setTimeout(function () {
-			$('#message_body').removeClass(types[type]);
 			hideMessage();
 		}, 2000);
 	});
@@ -132,7 +206,22 @@ function showMessage(type, text, lifetime) {
  */
 function hideMessage() {
 	$('#message_body').removeClass(current_alert_class);
+	$("#message_wrapper").removeClass('loading');
 	$('#message_wrapper').hide();
+}
+
+/**
+ * Показывает модальное окно
+ * @param modal_id идентификатор модального окна
+ */
+function showModal(modal_id) {
+	$('#messages_line').addClass('modal_mode');
+	$('#' + modal_id).modal('show');
+}
+
+function hideModal(modal_id) {
+	$('#messages_line').removeClass('modal_mode');
+	$('#' + modal_id).modal('hide');
 }
 
 /**
@@ -145,7 +234,6 @@ function hideMessage() {
  */
 function loading(text) {
 	if (text === false || ajaxmessage == false) {
-		$("#message_wrapper").removeClass('loading')
 		hideMessage();
 		setDefaultAjaxMessage();
 		return true;
@@ -188,13 +276,6 @@ function resetTesterParams() {
 	$.cookie('tester_params', '', { expires: -1, path: '/' });
 	showMessage('success', 'Вы сбросили роль');
 	window.location.reload();
-}
-
-/**
- * Отмечает в кукисах сообщение на главной как прочитанное
- */
-function thatFuckedWarningIAlreadyReadManyTimesMotherFuckerBeach_oGodFuckThatWebDevelopmentDepartmentPlease() {
-	$.cookie('yaProchel', 'yaProchel', { expires: 365, path: '/' });
 }
 
 /**
@@ -387,6 +468,7 @@ function closeModal(btn, confirm_text) {
 			return false;
 		}
 	}
+	$('#messages_line').removeClass('modal_mode');
 	modal_window.modal("hide");
 	return false;
 }

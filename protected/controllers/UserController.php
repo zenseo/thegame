@@ -2,13 +2,6 @@
 
 class UserController extends Controller
 {
-	public static $rbac_config = array(
-		'view' => 'Просмотр карточки пользователя',
-		'index' => 'Просмотр списка пользователей',
-		'create' => 'Создание пользователя',
-		'update' => 'Обновление данных',
-	);
-
 
 	/**
 	 * Displays a particular model.
@@ -25,28 +18,37 @@ class UserController extends Controller
 	}
 
 	/**
-	 * Creates a new model.
-	 * If creation is successful, the browser will be redirected to the 'view' page.
+	 * Создает новую запись в базе данных
+	 * Если запишь прошла успешно - перенаправляет пользователя на страницу просмотра
+	 * вновь созданной записи.
 	 */
 	public function actionCreate()
 	{
+		// Проверяем можно ли совершать это действие
 		$this->checkAccess('createUser');
 		$model = new User;
+		// Если нам переданы данные - начинаем обработку
 		if (isset($_POST['User'])) {
+			// Перегружаем свойства модели пришедшими данными и
 			$model->attributes = $_POST['User'];
+			$model->password = md5($model->password);
+			// пытаемся сохранить запись в базе данных
 			if ($model->save()) {
-				$this->redirect(array(
-					'view',
-					'id' => $model->id
+				// Если все прошло успешно - перенаправляем пользователя
+				echo CJSON::encode(array(
+					// На страницу просмотра только что созданной записи
+					'redirect' => '/user/' . $model->id
 				));
+				Yii::app()->end();
+			}
+			else {
+				// Если что-то пошло не так - выдаем пользователю сообщение об ошибке.
+				$this->throwException(CHtml::errorSummary($model), 402);
 			}
 		}
-		if (isset($_GET['User'])) {
-			$model->attributes = $_GET['User'];
+		else {
+			$this->throwException('Недостаточно данных!', 402);
 		}
-		$this->render('create', array(
-			'model' => $model,
-		));
 	}
 
 	/**
@@ -161,32 +163,71 @@ class UserController extends Controller
 		if (isset($_POST['User'])) {
 			$model->attributes = $_POST['User'];
 			if ($model->save()) {
-				$this->redirect(array(
-					'view',
-					'id' => $model->id
-				));
+				$this->showMessage('Данные успешно сохранены!');
+			}
+			else {
+				$this->throwException(CHtml::errorSummary($model), 402);
 			}
 		}
-
-		$this->render('update', array(
-			'model' => $model,
-		));
 	}
 
 
-	public function actionDelete($id)
+	/**
+	 * Изменяет пароль пользователя
+	 * Необходимо 2 пароля, совпадающих друг с другом
+	 * @param $id
+	 */
+	public function actionUpdatePassword($id)
+	{
+		$this->checkAccess('updatePasswordUser');
+		$this->checkRequiredData(array(
+			'new_password',
+			'confirm_password'
+		));
+
+		if ($_POST['new_password'] === $_POST['confirm_password']) {
+			$model = $this->loadModel($id);
+			$model->password = md5($_POST['new_password']);
+			if ($model->save()) {
+				$this->showMessage('Пароль был успешно изменен!');
+			}
+			else {
+				$this->throwException(CHtml::errorSummary($model), 402);
+			}
+		}else{
+			$this->throwException('Пароли не совпадают!', 403);
+		}
+	}
+
+	/**
+	 * Удаляет
+	 * @param integer $id
+	 */
+	public function actionDelete($id = 0)
 	{
 		$this->checkAccess('deleteUser');
-
 		try {
-			$this->loadModel($id)->delete();
-			$this->showMessage('User успешно удален');
+			// Если нам пришло много идентификаторов
+			if (isset($_REQUEST['ids']) //
+				&& is_array($_REQUEST['ids']) //
+				&& count($_REQUEST['ids'])
+			) {
+				// Удаляем всех
+				User::model()->deleteAllByAttributes(array('id' => $_REQUEST['ids']));
+				$this->showMessage('User успешно удалены!');
+			}
+			else if ($id !== 0) {
+				$this->loadModel($id)->delete();
+				$this->showMessage('User успешно удален');
+			}
+			else {
+				throw new Exception('Переданы не все параметры!', 402);
+			}
 		}
-		catch (CDbException $e) {
-			$this->throwException('CDbException', 'Не удалось удалить User', 500);
+		catch (Exception $e) {
+			$this->throwException('Не удалось удалить ModelClass: ' . $e->getMessage(), $e->getCode());
 		}
 	}
-
 
 	public function actionIndex()
 	{
@@ -212,7 +253,7 @@ class UserController extends Controller
 		}
 
 		if ($this->isAjax()) {
-			$this->renderPartial('index', array(
+			$this->renderPartial('_super_grid', array(
 				'model' => $model,
 				'grid_id' => $grid_id,
 				'filter' => $columns_filter,

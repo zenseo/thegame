@@ -18,9 +18,13 @@ class WebUser extends CWebUser
 				}
 			}
 		}
-		$user = User::model()->findByPk($this->id);
+		$user = User::model()->findByPk($this->id, array('select'=>'role'));
+		if($user){
+			return $user->role;
+		}else{
+			return 'guest';
+		}
 
-		return $user->role;
 	}
 
 	/**

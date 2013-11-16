@@ -144,6 +144,7 @@ $this->beginWidget('bootstrap.widgets.TbModal', array(
 					height: coordinates.h * corrective
 				}
 			}, function () {
+				loading(false);
 				closeThisModal();
 				$('#user_photo').attr('src', '');
 				$('#user_photo').attr('src', this.image);

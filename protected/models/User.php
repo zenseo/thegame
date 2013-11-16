@@ -34,6 +34,11 @@
  * @property integer $position
  * @property string $avatar
  * @property string $photo
+ * @property string $confirm_password
+ * @property string $new_password
+ * @property string $full_name
+ * @property string $fio
+ * @property string $rbac_config
  *
  * The followings are the available model relations:
  * @property AuthItem[] $authItems
@@ -58,12 +63,19 @@ class User extends ActiveRecord
 		'indexUser' => 'Просмотр списка пользователей',
 		'createUser' => 'Создание пользователя',
 		'updateUser' => 'Обновление данных',
+		'deleteUser' => 'Удаление записи',
+		'updatePasswordUser' => 'Смена пароля',
 	);
 
 	/**
-	 * @var string файл фотографии пользователя
+	 * @var string подтверждение пароля
 	 */
-	public $user_photo_file;
+	public $confirm_password;
+
+	/**
+	 * @var string новый пароль
+	 */
+	public $new_password;
 
 	/**
 	 * Имя и фамилия
@@ -76,6 +88,18 @@ class User extends ActiveRecord
 	 * @var string
 	 */
 	public $fio;
+
+	/**
+	 * @var integer Мужчина
+	 */
+	const USER_GENDER_MAN = 1;
+
+	/**
+	 * @var integer Женщина
+	 */
+	const USER_GENDER_WOMAN = 0;
+
+
 
 	/**
 	 * @var integer Максимальная высота фотографии пользователя
@@ -115,9 +139,10 @@ class User extends ActiveRecord
 		// will receive user inputs.
 		return array(
 			array(
-				'login, email, phone, firstname, gender',
+				'login, email, phone, firstname, gender,password',
 				'required'
 			),
+
 			array(
 				'gender, department, passport_serial, passport_number, labor_contract_number, status, position',
 				'numerical',
@@ -276,6 +301,8 @@ class User extends ActiveRecord
 			'position' => 'Должность',
 			'avatar' => 'Аватар',
 			'photo' => 'Фото',
+			'confirm_password' => 'Подтверждение',
+			'new_password' => 'Новый пароль',
 		);
 	}
 
@@ -346,7 +373,6 @@ class User extends ActiveRecord
 	 */
 	public function search()
 	{
-		//		$this->getMultiselectsData();
 		$criteria = new CDbCriteria;
 		$criteria->compare('id', $this->id);
 		$criteria->compare('login', $this->login, true);

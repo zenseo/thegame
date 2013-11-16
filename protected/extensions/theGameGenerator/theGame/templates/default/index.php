@@ -1,42 +1,31 @@
 <?php
-echo '<?php
-/**
- * Выводит таблицу всех записей, в меганавороченном гриде...
- * @var $model ' . $this->modelClass . '
- * @var $this Controller
- */
-$this->breadcrumbs = array(
-	"' . $this->modelClass . '",
-);
-$this->pageTitle = "' . $this->modelClass . ' - " . Yii::app()->name;
+$markers = array();
+$data = array();
+// Больше информации можно получить из var_dump
+//var_dump($this);exit;
 
-$this->widget("EzvukGrid", array(
-	"id" => $grid_id,
-	"name" => "' . $this->modelClass . '",
-	// Заголовок таблицы
-	"fluid" => true,
-	"selectableRows" => 1,
-	"dataProvider" => $model->search(),
-	//Данные для грида
-	"filter" => $model,
-	// Данные фильтра грида
-	"columns" => $columns,
-	//Колонки грида
-	// Настройки тулбара
-	"toolbarOptions" => array(
-		"columns_filter" => array(
-			"model" => $model,
-			"current_columns" => $filter,
-		),
-	),
-	//Фильтр для тулбара/фильтра
-	"summaryText" => "' . $this->modelClass . ' {start} &#151; {end} из {count}",
-	//Необязательное поле
-	"multiselects" => array(
-		"some_multiselect_id" => "some_multiselect_model_attribute" //  Тут указывайте идентификаторы мультиселектов со значениями их атрибутов модели, которые вы впилили в супергрид. Ибо надо...
-	),
-	"datepickers" => array(
-		"some_datepicker_id" => "some_datepicker_model_attribute" //  Тут указывайте идентификаторы дейтпикеров со значениями их атрибутов модели, которые вы впилили в супергрид. Ибо надо...
-	)
+// Добавляем название класса контроллера для начала
+$markers[] = 'BaseControllerClass';
+$data[] = $this->baseControllerClass;
 
-));';
+// Добавляем название класса контроллера для начала
+$markers[] = 'ControllerClass';
+$data[] = $this->controllerClass;
+
+// Добавляем название класса модели
+$markers[] = 'ModelClass';
+$data[] = $this->modelClass;
+
+// Добавляем название класса модели в нижнем регистре
+$markers[] = 'LowerMClass';
+$data[] = strtolower($this->modelClass);
+
+// Добавляем название класса контроллера в нижнем регистре
+$markers[] = 'LowerCClass';
+$data[] = strtolower($this->controllerClass);
+
+// Загружаем шаблончик
+$tpl = file_get_contents(dirname(__FILE__).'/tpl/index.php');
+
+// Замещаем маркеры и выводим зрителям =)
+echo str_replace($markers, $data, $tpl);

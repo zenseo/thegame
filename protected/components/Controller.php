@@ -4,6 +4,16 @@ class Controller extends CController
 {
 	public $breadcrumbs;
 
+
+	public function checkRequiredData($data=array()){
+		foreach($data as $param){
+			if(!isset($_POST[$param]) || empty($_POST[$param])){
+				$this->throwException('Необходимо передать '.$param, 402);
+			}
+		}
+	}
+
+
 	/**
 	 * Проверяет доступ к элементу авторизации.
 	 * По сути это просто сокращенная запись Yii::app()->user->checkUserAccess
@@ -114,7 +124,6 @@ class Controller extends CController
 	{
 		// Если это аяксовый запрос - кидает json
 		if (Yii::app()->getRequest()->isAjaxRequest) {
-			$message = 'Ошибка ' . $code . ' - ' . $message;
 			echo CJSON::encode(array(
 				'status' => $code,
 				'message' => $message
@@ -195,8 +204,12 @@ class Controller extends CController
 		 *        );
 		 * </pre>
 		 */
+
+		$super_user = $auth->createRole('admin', 'Администратор');
+
 		$models = array(
-			'User'
+			'User',
+			'Customer'
 		);
 		// Прогоняем все модели из списка
 		foreach ($models as $model) {
@@ -206,6 +219,7 @@ class Controller extends CController
 				foreach ($operations as $name => $description) {
 					// Генерируем операции на основе конфига что-то вроде
 					$auth->createOperation($name, $description);
+					$super_user->addChild($name);// И сразу же их добавляем суперпользователю
 				}
 			}
 		}
@@ -298,11 +312,10 @@ class Controller extends CController
 
 		// Ну а главарь
 		// (он же admin) имеет доступ во все закоулки системы
-		$role = $auth->createRole('admin', 'Администратор');
-		$role->addChild('sales_head');
-		$role->addChild('system_administrator');
-		$role->addChild('reinstallRbacTest');
-		$role->addChild('panelTest'); //Доступ к панели тестирования
+		$super_user->addChild('sales_head');
+		$super_user->addChild('system_administrator');
+		$super_user->addChild('reinstallRbacTest');
+		$super_user->addChild('panelTest'); //Доступ к панели тестирования
 		//Сохраняем все это дело
 		try {
 			$auth->save();

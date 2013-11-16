@@ -1,20 +1,18 @@
 <?php
 /**
- *## BootstrapCode class file.
+ *## TheGameCode class file.
  *
- * @author Christoffer Niska <ChristofferNiska@gmail.com>
- * @copyright Copyright &copy; Christoffer Niska 2011-
+ * @author Roman Agolov <agilovr@gmail.com>
+ * @copyright Copyright &copy; Roman Agolov 2013-
  * @license http://www.opensource.org/licenses/bsd-license.php New BSD License
  */
 
 Yii::import('gii.generators.crud.CrudCode');
 
 /**
- *## Class BootstrapCode
- *
- * @package booster.gii
+ *## Class TheGameCode
  */
-class BootstrapCode extends CrudCode
+class TheGameCode extends CrudCode
 {
 	public function generateActiveRow($modelClass, $column)
 	{
