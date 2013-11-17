@@ -17,7 +17,7 @@ $this->widget("SuperJsonGrid", array(
 		"flush_grid_filter" => true,
 		"buttons" => array(
 			$this->widget("bootstrap.widgets.TbButton", array(
-				'label' => 'Добавить запись',
+				'label' => 'Добавить клиента',
 				'type' => 'primary',
 				'htmlOptions' => array(
 					'onclick' => 'showModal("add_customer_modal");return false;'

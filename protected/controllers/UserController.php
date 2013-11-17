@@ -194,7 +194,8 @@ class UserController extends Controller
 			else {
 				$this->throwException(CHtml::errorSummary($model), 402);
 			}
-		}else{
+		}
+		else {
 			$this->throwException('Пароли не совпадают!', 403);
 		}
 	}
@@ -301,6 +302,9 @@ class UserController extends Controller
 	}
 
 
+	/**
+	 * Автодополнение пользователя
+	 */
 	public function actionAutoCompleteUser()
 	{
 		$term = Yii::app()->request->getParam('term', null);
@@ -309,7 +313,16 @@ class UserController extends Controller
 		}
 		$model = new User();
 		$criteria = new CDbCriteria();
-		$criteria->addSearchCondition('lastname', $term);
+
+		// Разбиваем пришедший нам запрос на ключевые слова
+		$keywords = explode(' ', $term);
+		foreach ($keywords as $keyword) {
+			// И ищем каждое ключевое слово в фамилии имени или отчестве пользователя
+			$criteria->addSearchCondition('firstname', $keyword, true, "OR");
+			$criteria->addSearchCondition('lastname', $keyword, true, "OR");
+			$criteria->addSearchCondition('surename', $keyword, true, "OR");
+		}
+
 		$all_users = $model->model()->findAll($criteria);
 		$users = array();
 		foreach ($all_users as $u) {
@@ -317,8 +330,9 @@ class UserController extends Controller
 			// То создаем элемент массива
 			if ($u->role != 'fired') {
 				$user = array();
+				$user['id'] = $u->id;
 				$user['login'] = $u->login;
-				$user['label'] = $u->full_name . ' (' . $u->role . ')';
+				$user['label'] = $u->full_name . ($u->role? ' (' . $u->role . ')' : '');
 				$users[] = $user;
 			}
 		}

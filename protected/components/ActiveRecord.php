@@ -64,6 +64,16 @@ class ActiveRecord extends CActiveRecord
 			}
 		}
 
+		// Если у таблицы есть поле "Создатель"  пишем в него id пользователя
+		if(!$this->id && (isset($this->creator_id) || $this->updater_id === null)){
+			$this->creator_id = Yii::app()->user->id;
+		}
+
+		// Если у таблицы есть поле "Кто обновил"  пишем в него id пользователя
+		if(isset($this->updater_id) || $this->updater_id === null){
+			$this->updater_id = Yii::app()->user->id;
+		}
+
 		return true;
 	}
 

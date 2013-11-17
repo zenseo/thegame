@@ -108,13 +108,15 @@ class ClassNamePlaceholder extends ActiveRecord
 
 	/**
 	 * Метод, который отдает данные для фильтра типа мультиселект
-	 * @return array - возвращает массив данных
+	 * @param $attribute атрибут модели, для которого нужно получить данные
+	 * @return boolean|array - возвращает массив данных или false, если не описано
+	 * получение данных или атрибут не присутствует в массиве $this->grid_multi_selects
 	 */
 	public function getMultiSelectsData($attribute)
 	{
 		// Если мультиселект не описан - не нужно ничего проверять
 		if (!in_array($attribute, $this->grid_multi_selects)) {
-			return;
+			return false;
 		}
 		// Тут пример кода
 		// TODO Удалите эти строки, если вам не нужны мультиселекты в таблице
@@ -157,13 +159,36 @@ class ClassNamePlaceholder extends ActiveRecord
 	public function search()
 	{
 		$criteria = new CDbCriteria;
-"SearchPlaceholder";
+		"SearchPlaceholder";
 
 		// Автоматическое добавление поиска по датам на основе
 		// массива $this->dates_for_convert
 		foreach ($this->dates_for_convert as $attribute) {
 			$criteria = $this->getSearchDate($criteria, $attribute);
 		}
+
+		/* Пример превращения текстового ввода в идентифкиатор
+		if (isset($this->creator_id)) {
+			$user_criteria = new CDbCriteria();
+			// Разбиваем пришедший нам запрос на ключевые слова
+			$keywords = explode(' ', $this->creator_id);
+			foreach ($keywords as $keyword) {
+				// И ищем каждое ключевое слово в фамилии имени или отчестве пользователя
+				$user_criteria->addSearchCondition('firstname', $keyword, true, "OR");
+				$user_criteria->addSearchCondition('lastname', $keyword, true, "OR");
+				$user_criteria->addSearchCondition('surename', $keyword, true, "OR");
+			}
+			$users = User::model()->findAll($criteria, array('select' => 'id'));
+			if ($users) {
+				$user_ids = array();
+				foreach ($users as $user) {
+					$user_ids[] = $user->id;
+				}
+				$criteria->compare('creator_id', $user_ids);
+			}
+		}
+		*/
+
 
 		return new CActiveDataProvider($this, array(
 			'criteria' => $criteria,
@@ -196,7 +221,6 @@ class ClassNamePlaceholder extends ActiveRecord
 	public $alternateConnectPlaceholder;
 
 
-
 	/**
 	 * Пишет данные для ряда фильтр котороего является
 	 * мультиселектом.
@@ -215,8 +239,9 @@ class ClassNamePlaceholder extends ActiveRecord
 	 * @param $attribute - атрибут модели, который превращаем в ссылку
 	 * @return string - html-разметка ссылки, которая будет вставлена как значение атрибута в гриде
 	 */
-	public function getMoreLink($attribute){
-		return '<a target="_blank" href="/'.strtolower(__CLASS__).'/'. $this->id .'">'. $this->$attribute .'</a>';
+	public function getMoreLink($attribute)
+	{
+		return '<a target="_blank" href="/' . strtolower(__CLASS__) . '/' . $this->id . '">' . $this->$attribute . '</a>';
 	}
 
 	/**
@@ -245,7 +270,7 @@ class ClassNamePlaceholder extends ActiveRecord
 						'name' => 'id',
 						'type' => 'raw',
 						'header' => '#',
-						'value' =>'$data->getMoreLink("'.$row.'")',
+						'value' => '$data->getMoreLink("' . $row . '")',
 						'htmlOptions' => array(
 							'class' => 'grid_id_column'
 						)

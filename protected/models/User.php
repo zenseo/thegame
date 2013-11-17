@@ -122,6 +122,45 @@ class User extends ActiveRecord
 	const USER_AVATAR_ASPECT_RATIO = 1;
 
 
+	/////////////////////////////////////////////////
+	/////// Константы сосотяний пользователя ////////
+	/////////////////////////////////////////////////
+	/**
+	 * @var integer Онлайн
+	 */
+	const USER_STATUS_ONLINE = 1;
+
+	/**
+	 * @var integer Не в сети
+	 */
+	const USER_STATUS_OFFLINE = 2;
+
+	/**
+	 * @var integer Уволен
+	 */
+	const USER_STATUS_FIRED = 3;
+
+	/**
+	 * @var integer Заблокирован
+	 */
+	const USER_STATUS_BLOCKED = 4;
+
+	/**
+	 * @var integer Отошел
+	 */
+	const USER_STATUS_AWAY = 5;
+
+	/**
+	 * @var integer Не беспокоить
+	 */
+	const USER_STATUS_KEEP_OUT = 6;
+
+	/**
+	 * @var integer Спит
+	 */
+	const USER_STATUS_SLEEP = 7;
+
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -573,6 +612,29 @@ class User extends ActiveRecord
 			)
 		);
 	}
+
+
+
+
+	/**
+	 * Возвращает список всех активных пользователей
+	 * из базы данных. Активный - это не уволенный и не заблокированный
+	 */
+	public static function activeUsers(){
+		$criteria = new CDbCriteria();
+		// Нам нужны все не уволенные и не заблокированные пользователи
+		$criteria->addNotInCondition('status', array(
+			self::USER_STATUS_BLOCKED,
+			self::USER_STATUS_FIRED
+		));
+		$users = self::model()->findAll(array(
+			'select' => 'id, firstname, lastname',
+			'limit' => 100
+		));
+		return $users;
+	}
+
+
 
 	/**
 	 * @return array Колонки фильтра

@@ -15,7 +15,7 @@ class SiteController extends Controller
 	{
 		$human = new ManGenerator();
 		$begin = time();
-		$people = $human->generateMan(10000);
+		$people = $human->generateMan(100);
 		$speed_php = time() - $begin;
 		User::model()->deleteAll();
 		$begin = time();

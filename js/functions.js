@@ -1,5 +1,7 @@
-// Сообщение, которое показывается по умолчанию при аяксовом запросе
+// Сообщение, которое показывается по
+// умолчанию при аяксовом запросе
 var ajaxmessage = 'Загрузка...';
+
 /**
  * Устанавливает значение аяксового сообщения
  */
@@ -23,14 +25,12 @@ function simpleJson(url, data, onSuccess) {
 		dataType: "json",
 		url: url,
 		data: dataJson,
-		complete: function () {
-		},
 		success: function (data) {
 			if (data.redirect) {
 				hideMessage();
 				window.location.href = data.redirect;
 			}
-			if (data.status == 200) {
+			else if (data.status == 200) {
 				if (onSuccess) {
 					onSuccess.call(data);
 				}
@@ -56,7 +56,7 @@ function ajaxForm(id_form, ajaxMessage, onSuccess) {
 				hideMessage();
 				window.location.href = data.redirect;
 			}
-			if (data.status == 200) {
+			else if (data.status == 200) {
 				if (onSuccess) {
 					onSuccess.call(data);
 				}
@@ -68,8 +68,6 @@ function ajaxForm(id_form, ajaxMessage, onSuccess) {
 				showMessage('error', data.message);
 			}
 
-		},
-		complete: function () {
 		}
 	}).submit();
 }
@@ -205,9 +203,8 @@ function showMessage(type, text, lifetime) {
  * Скрыватет сообщение с глаз долой
  */
 function hideMessage() {
-	$('#message_body').removeClass(current_alert_class);
-	$("#message_wrapper").removeClass('loading');
 	$('#message_wrapper').hide();
+	$('#message_body').removeClass(current_alert_class).html('');
 }
 
 /**
@@ -233,15 +230,20 @@ function hideModal(modal_id) {
  * загрузки и очищает текст
  */
 function loading(text) {
-	if (text === false || ajaxmessage == false) {
-		hideMessage();
+	// Если в качестве параметра text передано false
+	// скрываем индикатор загрузки. Так же индикатор загрузки
+	// можно временно отключить присвоив ajaxmessage значение false
+	if (text === false || ajaxmessage === false) {
+		$('#loading_wrapper').hide();
 		setDefaultAjaxMessage();
 		return true;
 	}
+	// Если же текст не передан или передана строка
+	// Показываем индикатор загрузки
 	var html = text ? text : ajaxmessage;
 	// Показываем сообщение
-	$('#message_body').html(html);
-	$('#message_wrapper').addClass('loading').show();
+	$('#loading_body').html(html);
+	$('#loading_wrapper').show();
 	return true;
 }
 

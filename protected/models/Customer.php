@@ -13,13 +13,13 @@
  * @property string $gis_id Идентификатор 2gis
  * @property string $created Создан
  * @property string $updated Последнее обновление
- * @property integer $responsible Ответсвенный
+ * @property integer $responsible_id Ответсвенный
  * @property string $note Коментарий
  * @property integer $in_work В работе
  * @property integer $removed Удален
  * @property integer $sales_status Статус продаж
- * @property integer $creator Кто добавил
- * @property integer $updater Кто последний раз обновил
+ * @property integer $creator_id Кто добавил
+ * @property integer $updater_id Кто последний раз обновил
  *
  *
  * Ниже описаны доступные для модели зависимости:
@@ -27,9 +27,62 @@
  * @property RelationCustomerContact[] $relationCustomerContacts
  * @property Requisites[] $requisites
  * @property Task[] $tasks
+ * @property User $creator
+ * @property User $updater
+ * @property User $responsible
  */
 class Customer extends ActiveRecord
 {
+
+
+	////////////////////////////////////////////////////
+	/////// Константы статусов продажи клиентов ////////
+	////////////////////////////////////////////////////
+	/**
+	 * @var integer Потенциальный клиент
+	 */
+	const SALES_STATUS_POTENTIAL = 1;
+
+	/**
+	 * @var integer Заинтересованный
+	 */
+	const SALES_STATUS_INTERESTED = 2;
+
+	/**
+	 * @var integer В процессе покупки
+	 */
+	const SALES_STATUS_IN_PROGRESS = 3;
+
+	/**
+	 * @var integer Купил один раз
+	 */
+	const SALES_STATUS_ONE_SALE = 4;
+
+	/**
+	 * @var integer Постоянный клиент
+	 */
+	const SALES_STATUS_PERMANENT = 5;
+
+	/**
+	 * @var integer Закрылся
+	 */
+	const SALES_STATUS_DEAD = 6;
+
+	/**
+	 * @var integer Отказ
+	 */
+	const SALES_STATUS_DISAGREE = 7;
+
+	/**
+	 * @var integer Архив
+	 */
+	const SALES_STATUS_ARCHIVE = 8;
+
+	/**
+	 * @var integer Зомби
+	 */
+	const SALES_STATUS_ZOMBIE = 9;
+
 
 	/**
 	 * @var array Конфигурационный массив правил для RBAC
@@ -38,11 +91,11 @@ class Customer extends ActiveRecord
 	 * вместо ... => 'Просмотр карточки'
 	 */
 	public static $rbac_config = array(
-		'viewCustomer' => 'Просмотр карточки',
-		'indexCustomer' => 'Просмотр списка',
-		'createCustomer' => 'Создание',
-		'updateCustomer' => 'Обновление',
-		'deleteCustomer' => 'Удаление',
+		'viewCustomer' => 'Просмотр карточки клиента',
+		'indexCustomer' => 'Просмотр списка клиентов',
+		'createCustomer' => 'Создание клиента',
+		'updateCustomer' => 'Обновление данных клиента',
+		'deleteCustomer' => 'Удаление клиента',
 	);
 
 
@@ -67,7 +120,17 @@ class Customer extends ActiveRecord
 				'required'
 			),
 			array(
-				'responsible, in_work, removed, sales_status, creator, updater',
+				'email',
+				'email'
+			),
+			array(
+				'phone',
+				'match',
+				'message' => 'Номер телефона должен быть в формате +79998887766 или 89998887755',
+				'pattern' => '/\+?\d{11,15}/'
+			),
+			array(
+				'responsible_id, in_work, removed, sales_status, creator_id, updater_id',
 				'numerical',
 				'integerOnly' => true
 			),
@@ -90,7 +153,7 @@ class Customer extends ActiveRecord
 			// Следующее правило будет использовано в search().
 			// @todo Пожалуйста удалите атрибуты, которые не должны экранироваться в поиске
 			array(
-				'id, name, phone, email, address, gis_id, created, updated, responsible, note, in_work, removed, sales_status, creator, updater',
+				'id, name, phone, email, address, gis_id, created, updated, responsible_id, note, in_work, removed, sales_status, creator_id, updater_id',
 				'safe',
 				'on' => 'search'
 			),
@@ -126,6 +189,23 @@ class Customer extends ActiveRecord
 				'customer'
 			),
 
+			// Ответственный
+			'responsible' => array(
+				self::BELONGS_TO,
+				'User',
+				'responsible_id'
+			),
+			'creator' => array(
+				self::BELONGS_TO,
+				'User',
+				'creator_id'
+			),
+			'updater' => array(
+				self::BELONGS_TO,
+				'User',
+				'updater_id'
+			),
+
 		);
 	}
 
@@ -143,13 +223,13 @@ class Customer extends ActiveRecord
 			'gis_id' => 'Идентификатор 2gis',
 			'created' => 'Создан',
 			'updated' => 'Последнее обновление',
-			'responsible' => 'Ответсвенный',
+			'responsible_id' => 'Ответсвенный',
 			'note' => 'Коментарий',
 			'in_work' => 'В работе',
 			'removed' => 'Удален',
 			'sales_status' => 'Статус продаж',
-			'creator' => 'Кто добавил',
-			'updater' => 'Кто последний раз обновил',
+			'creator_id' => 'Кто добавил',
+			'updater_id' => 'Кто обновил',
 
 		);
 	}
@@ -165,16 +245,14 @@ class Customer extends ActiveRecord
 			'phone',
 			'email',
 			'address',
-			'gis_id',
 			'created',
 			'updated',
-			'responsible',
+			'responsible_id',
 			'note',
 			'in_work',
-			'removed',
 			'sales_status',
-			'creator',
-			'updater',
+			'creator_id',
+			'updater_id',
 
 		);
 	}
@@ -189,7 +267,7 @@ class Customer extends ActiveRecord
 	 */
 	public $dates_for_convert = array(
 		'created',
-		'updated',
+		'updated'
 
 	);
 
@@ -199,11 +277,19 @@ class Customer extends ActiveRecord
 	 * Важно!!! Для каждого из перечисленных атрибутов должны быть
 	 * данные в методе getMultiSelectsData($attribute)
 	 */
-	public $grid_multi_selects = array();
+	public $grid_multi_selects = array(
+		'in_work',
+		'sales_status',
+		'responsible_id',
+		'creator_id',
+		'updater_id',
+	);
 
 	/**
 	 * Метод, который отдает данные для фильтра типа мультиселект
-	 * @return array - возвращает массив данных
+	 * @param $attribute атрибут модели, для которого нужно получить данные
+	 * @return boolean|array - возвращает массив данных или false, если не описано
+	 * получение данных или атрибут не присутствует в массиве $this->grid_multi_selects
 	 */
 	public function getMultiSelectsData($attribute)
 	{
@@ -211,22 +297,22 @@ class Customer extends ActiveRecord
 		if (!in_array($attribute, $this->grid_multi_selects)) {
 			return;
 		}
-		// Тут пример кода
-		// TODO Удалите эти строки, если вам не нужны мультиселекты в таблице
 		switch ($attribute) {
-			case 'gender':
-				$data = Utilities::ManWoman();
+			case 'in_work':
+				$data = Utilities::YesNo();
 				break;
-			case 'role':
-				$data = CHtml::listData(Yii::app()->authManager->getRoles(), 'name', 'description');
-				break;
-			case 'status':
-				$dictionary = new Dictionary('user_status');
+			case 'sales_status':
+				$dictionary = new Dictionary('customer__sales_status');
 				$data = CHtml::listData($dictionary->findAll(), 'id', 'name');
 				break;
-			case 'position':
-				$dictionary = new Dictionary('user_position');
-				$data = CHtml::listData($dictionary->findAll(), 'id', 'name');
+			case 'updater_id':
+				$data = CHtml::listData(User::activeUsers(), 'id', 'full_name');
+				break;
+			case 'creator_id':
+				$data = CHtml::listData(User::activeUsers(), 'id', 'full_name');
+				break;
+			case 'responsible_id':
+				$data = CHtml::listData(User::activeUsers(), 'id', 'full_name');
 				break;
 			default:
 				$data = false;
@@ -257,14 +343,14 @@ class Customer extends ActiveRecord
 		$criteria->compare('phone', $this->phone, true);
 		$criteria->compare('email', $this->email, true);
 		$criteria->compare('address', $this->address, true);
-		$criteria->compare('gis_id', $this->gis_id, true);
-		$criteria->compare('responsible', $this->responsible);
+//		$criteria->compare('gis_id', $this->gis_id, true);
 		$criteria->compare('note', $this->note, true);
 		$criteria->compare('in_work', $this->in_work);
-		$criteria->compare('removed', $this->removed);
+		$criteria->compare('removed', 0);
 		$criteria->compare('sales_status', $this->sales_status);
-		$criteria->compare('creator', $this->creator);
-		$criteria->compare('updater', $this->updater);
+		$criteria->compare('creator_id', $this->creator_id);
+		$criteria->compare('updater_id', $this->updater_id);
+		$criteria->compare('responsible_id', $this->responsible_id);
 
 
 		// Автоматическое добавление поиска по датам на основе
@@ -422,16 +508,14 @@ class Customer extends ActiveRecord
 					'phone',
 					'email',
 					'address',
-					'gis_id',
 					'created',
 					'updated',
-					'responsible',
+					'responsible_id',
 					'note',
 					'in_work',
-					'removed',
 					'sales_status',
-					'creator',
-					'updater',
+					'creator_id',
+					'updater_id',
 
 				)
 			),
