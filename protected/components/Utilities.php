@@ -265,4 +265,32 @@ class Utilities
 		return $string;
 	}
 
+
+	/**
+	 * Проверяет верно ли скобочное выражение
+	 * для проверки используется стек.
+	 * @param string $data входные данные
+	 * @return bool
+	 */
+	public function isCorrect($data){
+		$stack = array();
+		$brackets = array(
+			'(' => ')',
+			'{' => '}'
+		);
+		for ($i = 0; $i < strlen($data); $i++) {
+			$symbol = $data[$i];
+			if(isset($brackets[$symbol])){
+				array_unshift($stack, $symbol);
+			}else{
+				if(!count($stack))return false;
+				$last = array_shift($stack);
+				if($brackets[$last] !== $symbol){
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}// Могу пояснить каждую строчку в этой функции. Писал сам.
 }

@@ -16,6 +16,9 @@
 
 	<!-- Индикатор загрузки -->
 	<div style="display: none" id="loading_wrapper" class="message_wrapper loading">
-		<div id="loading_body" class="message_body alert">Загрузка</div>
+		<div id="loading_body" class="message_body alert">
+			<span id="loading_message">Загрузка</span>
+			<span id="loading_dots" class="loading_dots">...</span>
+		</div>
 	</div>
 </div>

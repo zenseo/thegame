@@ -77,6 +77,7 @@ $config = array(
 	'import' => array(
 		'application.models.*',
 		'application.components.*',
+		'application.controllers.*',
 		'application.extensions.CAdvancedArBehavior',
 		// Поведение для автоматического сохранения связанных данных в модели
 	),

@@ -1,9 +1,9 @@
 <?php
 /**
- * Class ControllerClass
+ * Class ContactController
  */
 
-class ControllerClass extends BaseControllerClass
+class ContactController extends Controller
 {
 	/**
 	 * Отображает модель
@@ -12,7 +12,7 @@ class ControllerClass extends BaseControllerClass
 	 */
 	public function actionView($id)
 	{
-		$this->checkAccess('viewModelClass');
+		$this->checkAccess('viewContact');
 		$model = $this->loadModel($id);
 		$this->render('view', array(
 			'model' => $model,
@@ -27,24 +27,19 @@ class ControllerClass extends BaseControllerClass
 	public function actionCreate()
 	{
 		// Проверяем можно ли совершать это действие
-		$this->checkAccess('createModelClass');
+		$this->checkAccess('createContact');
 		// Проверяем - пришли ли данные
 		$this->checkRequiredData(array(
-			'ModelClass',
+			'Contact',
 		));
 		// Если нам переданы данные - начинаем обработку
-		$model = new ModelClass;
+		$model = new Contact;
 
 		// Перегружаем свойства модели пришедшими данными и
-		$model->attributes = $_POST['ModelClass'];
+		$model->attributes = $_POST['Contact'];
 		// пытаемся сохранить запись в базе данных
 		if ($model->save()) {
-			// Если все прошло успешно - перенаправляем пользователя
-			echo CJSON::encode(array(
-				// На страницу просмотра только что созданной записи
-				'redirect' => '/ModelClass/' . $model->id
-			));
-			Yii::app()->end();
+			$this->showMessage('Контакт успешно добавлен!');
 		}
 		else {
 			// Если что-то пошло не так - выдаем пользователю сообщение об ошибке.
@@ -58,16 +53,16 @@ class ControllerClass extends BaseControllerClass
 	 */
 	public function actionUpdate($id)
 	{
-		$this->checkAccess('updateModelClass');
+		$this->checkAccess('updateContact');
 		$this->denyNotAjax();
 		// Проверяем - пришли ли данные
 		$this->checkRequiredData(array(
-			'ModelClass',
+			'Contact',
 		));
 		$model = $this->loadModel($id);
-		$model->attributes = $_POST['ModelClass'];
+		$model->attributes = $_POST['Contact'];
 		if ($model->save()) {
-			$this->showMessage('ModelClass успешно изменен!');
+			$this->showMessage('Contact успешно изменен!');
 		}
 		else {
 			$this->throwException(CHtml::errorSummary($model), 500);
@@ -81,7 +76,7 @@ class ControllerClass extends BaseControllerClass
 	 */
 	public function actionDelete($id = 0)
 	{
-		$this->checkAccess('deleteModelClass');
+		$this->checkAccess('deleteContact');
 		try {
 			// Если нам пришло много идентификаторов
 			if (isset($_REQUEST['ids']) //
@@ -89,19 +84,19 @@ class ControllerClass extends BaseControllerClass
 				&& count($_REQUEST['ids'])
 			) {
 				// Удаляем всех
-				ModelClass::model()->deleteAllByAttributes(array('id' => $_REQUEST['ids']));
-				$this->showMessage('ModelClass успешно удалены');
+				Contact::model()->deleteAllByAttributes(array('id' => $_REQUEST['ids']));
+				$this->showMessage('Контакты успешно удалены!');
 			}
 			else if ($id !== 0) {
 				$this->loadModel($id)->delete();
-				$this->showMessage('ModelClass успешно удален');
+				$this->showMessage('Контакт успешно удален!');
 			}
 			else {
 				throw new Exception('Переданы не все параметры!', 402);
 			}
 		}
 		catch (Exception $e) {
-			$this->throwException('Не удалось удалить ModelClass: ' . $e->getMessage(), $e->getCode());
+			$this->throwException('Не удалось удалить контакт: ' . $e->getMessage(), $e->getCode());
 		}
 	}
 
@@ -111,12 +106,12 @@ class ControllerClass extends BaseControllerClass
 	 */
 	public function actionIndex()
 	{
-		$this->checkAccess('indexModelClass');
-		$model = new ModelClass('search');
-		$grid_id = "LowerMClass_grid";
+		$this->checkAccess('indexContact');
+		$model = new Contact('search');
+		$grid_id = "contact_grid";
 		$model->unsetAttributes(); // чистим дефолтные значения
-		if (isset($_GET['ModelClass'])) {
-			$model->attributes = $_GET['ModelClass'];
+		if (isset($_GET['Contact'])) {
+			$model->attributes = $_GET['Contact'];
 		}
 		else {
 			if (isset($_COOKIE[$grid_id])) {
@@ -134,7 +129,7 @@ class ControllerClass extends BaseControllerClass
 
 		// Дабы JsonGrid нормально парсился рисуем его отдельно
 		if ($this->isAjax()) {
-			$this->renderPartial('_super_json_grid', array(
+			$this->renderPartial('grids/_super_json_grid', array(
 				'model' => $model,
 				'grid_id' => $grid_id,
 				'grid_data_provider' => $model->search(),
@@ -154,6 +149,9 @@ class ControllerClass extends BaseControllerClass
 	}
 
 
+
+
+
 	/**
 	 * Возвращает данные модели, найденные по ключу
 	 * если данные модели не найдены - выдает исключение.
@@ -163,9 +161,9 @@ class ControllerClass extends BaseControllerClass
 	 */
 	public function loadModel($id)
 	{
-		$model = ModelClass::model()->findByPk($id);
+		$model = Contact::model()->findByPk($id);
 		if ($model === null) {
-			$this->throwException('Модель класса ModelClass не найдена в базе данных', 404);
+			$this->throwException('Модель класса Contact не найдена в базе данных', 404);
 		}
 
 		return $model;

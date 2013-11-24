@@ -140,7 +140,17 @@ $this->pageTitle = $model->name;
 	</div>
 
 	<!-- Контакты -->
-	<div class="tab-pane" id="contacts_tab"></div>
+	<div class="tab-pane" id="contacts_tab">
+
+		<?php
+		echo $contacts_grid;
+		$this->renderPartial('modals/_add_contact_modal', array(
+			'model' => $contact,
+			'customer' => $model,
+		));
+		?>
+
+	</div>
 
 	<!-- Реквизиты -->
 	<div class="tab-pane" id="details_tab"></div>

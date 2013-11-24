@@ -2,16 +2,16 @@
 /**
  * Выводит список всех записей
  *
- * @var $model ModelClass
- * @var $this ControllerClass
+ * @var $model Contact
+ * @var $this ContactController
  */
 
 $this->breadcrumbs = array(
-	"ModelClass",
+	"Contact",
 );
-$this->pageTitle = Yii::app()->name . " - ModelClass";
+$this->pageTitle = Yii::app()->name . " - Contact";
 
-$this->renderPartial('_super_json_grid', array(
+$this->renderPartial('grids/_super_json_grid', array(
 	'model' => $model,
 	'grid_id' => $grid_id,
 	'grid_data_provider' => $grid_data_provider,

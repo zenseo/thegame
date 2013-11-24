@@ -14,8 +14,46 @@ class CustomerController extends Controller
 	{
 		$this->checkAccess('viewCustomer');
 		$model = $this->loadModel($id);
+		$contact = new Contact();
+		$contacts_grid = $this->customerContactsGrid($id);
+
 		$this->render('view', array(
 			'model' => $model,
+			'contacts_grid' => $contacts_grid,
+			'contact' => $contact
+		));
+	}
+
+
+	/**
+	 * Выводит список всех контактов в карточке клиента
+	 */
+	public function customerContactsGrid($id)
+	{
+		$contact = new Contact('search');
+		$grid_id = "customer_contacts_grid";
+		$contact->unsetAttributes(); // чистим дефолтные значения
+		return $this->renderPartial('grids/_contacts_json_grid', array(
+			'customer_id' => $id,
+			'grid_id' => $grid_id,
+			'grid_data_provider' => $contact->search($id),
+			'columns' => $contact->columnsGrid($contact->customerGridAttributeDefault())
+		), true);
+	}
+
+	/**
+	 * Ajax обновление грида контактов в карточке клиента
+	 * @param $id идентификатор клиента
+	 */
+	public function actionContactsGrid($id=1){
+		$contact = new Contact('search');
+		$grid_id = "customer_contacts_grid";
+		$contact->unsetAttributes(); // чистим дефолтные значения
+		$this->renderPartial('grids/_contacts_json_grid', array(
+			'customer_id' => $id,
+			'grid_id' => $grid_id,
+			'grid_data_provider' => $contact->search($id),
+			'columns' => $contact->columnsGrid($contact->customerGridAttributeDefault())
 		));
 	}
 
@@ -150,6 +188,8 @@ class CustomerController extends Controller
 			));
 		}
 	}
+
+
 
 
 	/**

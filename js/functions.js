@@ -1,12 +1,12 @@
 // Сообщение, которое показывается по
 // умолчанию при аяксовом запросе
-var ajaxmessage = 'Загрузка...';
+var ajaxmessage = 'Загрузка';
 
 /**
  * Устанавливает значение аяксового сообщения
  */
 function setDefaultAjaxMessage() {
-	ajaxmessage = 'Загрузка...';
+	ajaxmessage = 'Загрузка';
 }
 
 /**
@@ -87,10 +87,10 @@ function deleteRecords(action, grid_id) {
 
 	// Если есть элементы для удаления
 	if (ids.length) {
-		// Спрашиваем у пользователя действительно ли он хочет их удалить и...
+		// Спрашиваем у пользователя действительно ли он хочет их удалить и
 		if (confirm('Для удаления выбрано ' + ids.length + ' записей. Продолжить?')) {
 			// Посылаем запрос на удаление записей.
-			ajaxmessage = 'Удаление...';
+			ajaxmessage = 'Удаление';
 			simpleJson(action, {ids: ids}, function () {
 				showMessage('success', this.message);
 				records.each(function () {// Удаляем эти записи
@@ -236,16 +236,45 @@ function loading(text) {
 	if (text === false || ajaxmessage === false) {
 		$('#loading_wrapper').hide();
 		setDefaultAjaxMessage();
+		clearInterval(loading_dots_interval);
 		return true;
 	}
 	// Если же текст не передан или передана строка
 	// Показываем индикатор загрузки
 	var html = text ? text : ajaxmessage;
 	// Показываем сообщение
-	$('#loading_body').html(html);
+	$('#loading_message').html(html);
+	// Назначаем ширину блоку загрузки примерно равную ширине контента
+	$('#loading_wrapper').css({'width':(html.length*14)+10});
+	animateLoadingDots();
 	$('#loading_wrapper').show();
 	return true;
 }
+
+/**
+ * Текущий текст точек
+ */
+var current_loading_dots;
+
+/**
+ * Внешняя переменная для интервала, чтобы можно было оборвать
+ */
+var loading_dots_interval;
+
+/**
+ * Запускает анимацию точек при загрузке
+ */
+function animateLoadingDots() {
+	current_loading_dots = '';
+	loading_dots_interval = setInterval(function () {
+		$('#loading_dots').text(current_loading_dots);
+		current_loading_dots += '.';
+		if (current_loading_dots.length > 3) {
+			current_loading_dots = ''
+		}
+	}, 450);
+}
+animateLoadingDots();
 
 function unsetGridFilterCookies(grid_id) {
 	$.removeCookie(grid_id);

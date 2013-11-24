@@ -52,7 +52,7 @@ class Controller extends CController
 		$message = $message ? $message : 'Нет доступа для совершения действия';
 
 		// Помещаем описание элемента авторизации в сообщение.
-		$message .= isset($auth_item->description) ? ' «' . $auth_item->description . '»' : ' «Неверное правило!»';
+		$message .= isset($auth_item->description) ? ' «' . $auth_item->description . '»' : $auth_item.' «Неверное правило!»';
 
 		// Если это аяксовый запрос - кидает json
 		if (Yii::app()->getRequest()->isAjaxRequest) {
@@ -209,7 +209,8 @@ class Controller extends CController
 
 		$models = array(
 			'User',
-			'Customer'
+			'Customer',
+			'Contact'
 		);
 		// Прогоняем все модели из списка
 		foreach ($models as $model) {
