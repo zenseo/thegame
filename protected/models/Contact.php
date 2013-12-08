@@ -4,7 +4,7 @@
  * Это класс модели для таблицы "contact".
  *
  * Ниже описаны доступные поля для таблицы 'contact':
- * 
+ *
  * @property integer $id Идентификатор контакта
  * @property string $lastname Фамилия
  * @property string $firstname Имя
@@ -21,7 +21,7 @@
  * @property integer $customer_id Клиент
  * @property string $position Должность
  *
- * 
+ *
  * Ниже описаны доступные для модели зависимости:
  * @property User $creator
  * @property User $updater
@@ -60,11 +60,29 @@ class Contact extends ActiveRecord
 		// NOTE: вам нужно лишь защитить атрибуты, которые будет вводить пользователь
 		// можете удалить лишнее
 		return array(
-			array('firstname', 'required'),
-			array('icq, creator_id, updater_id, customer_id', 'numerical', 'integerOnly'=>true),
-			array('lastname, firstname, surename, email', 'length', 'max'=>150),
-			array('phone, position', 'length', 'max'=>45),
-			array('comment, last_contact, updated', 'safe'),
+			array(
+				'firstname',
+				'required'
+			),
+			array(
+				'icq, creator_id, updater_id, customer_id',
+				'numerical',
+				'integerOnly' => true
+			),
+			array(
+				'lastname, firstname, surename, email',
+				'length',
+				'max' => 150
+			),
+			array(
+				'phone, position',
+				'length',
+				'max' => 45
+			),
+			array(
+				'comment, last_contact, updated',
+				'safe'
+			),
 			array(
 				'email',
 				'email'
@@ -75,7 +93,7 @@ class Contact extends ActiveRecord
 				'message' => 'Номер телефона должен быть в формате +79998887766 или 89998887755',
 				'pattern' => '/\+?\d{11,15}/'
 			),
-			
+
 
 			// Следующее правило будет использовано в search().
 			// @todo Пожалуйста удалите атрибуты, которые не должны экранироваться в поиске
@@ -95,12 +113,32 @@ class Contact extends ActiveRecord
 		// NOTE: возможно вам нужно настроить эти зависимости.
 		// Классы для зависимостей были сгенерированы автоматически! Проверьте их наличие.
 		return array(
-			'creator' => array(self::BELONGS_TO, 'User', 'creator_id'),
-			'updater' => array(self::BELONGS_TO, 'User', 'updater_id'),
-			'customer' => array(self::BELONGS_TO, 'Customer', 'customer_id'),
-			'requisites' => array(self::HAS_MANY, 'Requisites', 'director_id'),
-			'tasks' => array(self::HAS_MANY, 'Task', 'contact_id'),
-			
+			'creator' => array(
+				self::BELONGS_TO,
+				'User',
+				'creator_id'
+			),
+			'updater' => array(
+				self::BELONGS_TO,
+				'User',
+				'updater_id'
+			),
+			'customer' => array(
+				self::BELONGS_TO,
+				'Customer',
+				'customer_id'
+			),
+			'requisites' => array(
+				self::HAS_MANY,
+				'Requisites',
+				'director_id'
+			),
+			'tasks' => array(
+				self::HAS_MANY,
+				'Task',
+				'contact_id'
+			),
+
 		);
 	}
 
@@ -125,7 +163,7 @@ class Contact extends ActiveRecord
 			'phone' => 'Телефон',
 			'customer_id' => 'Клиент',
 			'position' => 'Должность',
-			
+
 		);
 	}
 
@@ -157,13 +195,14 @@ class Contact extends ActiveRecord
 	public function customerGridAttributeDefault()
 	{
 		return array(
+			'functions',
 			'lastname',
 			'firstname',
 			'surename',
 			'email',
 			'phone',
 			'position',
-//			'icq',
+			//			'icq',
 			'last_contact',
 		);
 	}
@@ -178,9 +217,9 @@ class Contact extends ActiveRecord
 	 */
 	public $dates_for_convert = array(
 		'last_contact',
-			'created',
-			'updated',
-			
+		'created',
+		'updated',
+
 	);
 
 	/**
@@ -245,22 +284,23 @@ class Contact extends ActiveRecord
 	public function search($customer_id = null)
 	{
 		$criteria = new CDbCriteria;
-		$criteria->compare('id',$this->id);
-		$criteria->compare('lastname',$this->lastname,true);
-		$criteria->compare('firstname',$this->firstname,true);
-		$criteria->compare('surename',$this->surename,true);
-		$criteria->compare('comment',$this->comment,true);
-		$criteria->compare('email',$this->email,true);
-		$criteria->compare('icq',$this->icq);
-		$criteria->compare('creator_id',$this->creator_id);
-		$criteria->compare('updater_id',$this->updater_id);
-		$criteria->compare('phone',$this->phone,true);
-		if(isset($customer_id)){
-			$criteria->compare('customer_id',$customer_id);
-		}else{
-			$criteria->compare('customer_id',$this->customer_id);
+		$criteria->compare('id', $this->id);
+		$criteria->compare('lastname', $this->lastname, true);
+		$criteria->compare('firstname', $this->firstname, true);
+		$criteria->compare('surename', $this->surename, true);
+		$criteria->compare('comment', $this->comment, true);
+		$criteria->compare('email', $this->email, true);
+		$criteria->compare('icq', $this->icq);
+		$criteria->compare('creator_id', $this->creator_id);
+		$criteria->compare('updater_id', $this->updater_id);
+		$criteria->compare('phone', $this->phone, true);
+		if (isset($customer_id)) {
+			$criteria->compare('customer_id', $customer_id);
 		}
-		$criteria->compare('position',$this->position,true);
+		else {
+			$criteria->compare('customer_id', $this->customer_id);
+		}
+		$criteria->compare('position', $this->position, true);
 
 
 		// Автоматическое добавление поиска по датам на основе
@@ -297,12 +337,12 @@ class Contact extends ActiveRecord
 
 		// Если у нас задан идентификатор клинета - делаем аякс
 		// апдейт через контроллер клиента
-		if(isset($customer_id)){
-			$data_provider_config['pagination'] =array(
-				'route'=>'/customer/contactsGrid/'
+		if (isset($customer_id)) {
+			$data_provider_config['pagination'] = array(
+				'route' => '/customer/contactsGrid/'
 			);
-			$data_provider_config['sort'] =array(
-				'route'=>'/customer/contactsGrid/'
+			$data_provider_config['sort'] = array(
+				'route' => '/customer/contactsGrid/'
 			);
 		}
 
@@ -359,6 +399,18 @@ class Contact extends ActiveRecord
 	}
 
 	/**
+	 * Отдает кнопки функций таблицы
+	 * @return string
+	 */
+	public function getGridFunctionsButtons()
+	{
+		$view_button = '<a class="dashed" href="#" data-id="' . $this->id . '" data-controller="contact" onclick="gridAjaxViewButton($(this));return false;">Просмотр</a>';
+		$delete_button = '<a class="dashed text-error" href="#" data-id="' . $this->id . '" data-controller="contact" data-grid="customer_contacts_grid" onclick="gridAjaxDeleteButton($(this));return false;">Удалить</a>';
+
+		return $view_button.'<br/>'.$delete_button;
+	}
+
+	/**
 	 * Отдает чекбокс для индексной таблицы
 	 * @return string
 	 */
@@ -379,6 +431,14 @@ class Contact extends ActiveRecord
 	{
 		foreach ($columns as $row) {
 			switch ($row) {
+				case 'functions':
+					$result[] = array(
+						'header' => "Действия",
+						'type' => 'raw',
+						'filter' => false,
+						'value' => '$data->getGridFunctionsButtons()'
+					);
+					break;
 				case 'id':
 					$result[] = array(
 						'name' => 'id',
@@ -449,21 +509,21 @@ class Contact extends ActiveRecord
 				'label' => 'Основные',
 				'childs' => array(
 					'id',
-			'lastname',
-			'firstname',
-			'surename',
-			'comment',
-			'email',
-			'icq',
-			'last_contact',
-			'created',
-			'updated',
-			'creator_id',
-			'updater_id',
-			'phone',
-			'customer_id',
-			'position',
-			
+					'lastname',
+					'firstname',
+					'surename',
+					'comment',
+					'email',
+					'icq',
+					'last_contact',
+					'created',
+					'updated',
+					'creator_id',
+					'updater_id',
+					'phone',
+					'customer_id',
+					'position',
+
 				)
 			),
 			'other' => array(

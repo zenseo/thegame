@@ -33,6 +33,7 @@ class Controller extends CController
 	 *
 	 * @param $auth_item - элемент авторизации RBAC дерева
 	 * @param bool $message - Свое сообщение пользователю (необязательно)
+	 * @return bool
 	 * @throws CHttpException || JSON || boolean
 	 *        возвращает ошибку, если не прошло проверку, либо кидает JSON с кодом status = 403
 	 *        ИЛИ
@@ -210,7 +211,8 @@ class Controller extends CController
 		$models = array(
 			'User',
 			'Customer',
-			'Contact'
+			'Contact',
+			'Task'
 		);
 		// Прогоняем все модели из списка
 		foreach ($models as $model) {

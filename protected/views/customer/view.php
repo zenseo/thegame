@@ -20,7 +20,6 @@ $this->pageTitle = $model->name;
 <ul class="nav nav-tabs">
 	<li class="active"><a href="#information_tab" data-toggle="tab">Информация</a></li>
 	<li><a href="#contacts_tab" data-toggle="tab">Контакты</a></li>
-	<li><a href="#details_tab" data-toggle="tab">Реквизиты</a></li>
 	<li><a href="#tasks_tab" data-toggle="tab">Задачи</a></li>
 	<li><a href="#history_tab" data-toggle="tab">История</a></li>
 </ul>
@@ -149,11 +148,14 @@ $this->pageTitle = $model->name;
 			'customer' => $model,
 		));
 		?>
+		<?php
+		$this->beginWidget('bootstrap.widgets.TbModal', array(
+			'id' => 'view_contact_modal',
+			'htmlOptions' => array('class' => 'middle_modal')
+		)); ?>
+		<?php $this->endWidget(); ?>
 
 	</div>
-
-	<!-- Реквизиты -->
-	<div class="tab-pane" id="details_tab"></div>
 
 	<!-- Задачи -->
 	<div class="tab-pane" id="tasks_tab"></div>

@@ -11,18 +11,55 @@ class SiteController extends Controller
 
 	}
 
-	public function actionGeneratePeople()
-	{
-		$human = new ManGenerator();
-		$begin = time();
-		$people = $human->generateMan(100);
-		$speed_php = time() - $begin;
-		User::model()->deleteAll();
-		$begin = time();
-		Yii::app()->db->schema->commandBuilder->createMultipleInsertCommand('user', $people)->execute();
-		$speed_sql = time() - $begin;
 
-		echo 'PHP - ' . $speed_php . ' ceк. MySql - ' . $speed_sql . ' сек.';
+	/**
+	 * Набивает базу пользователями
+	 */
+	public function actionGenerateTestData()
+	{
+		$config = array(
+			'generate_users' => 100,
+			'generate_clients' => 100,
+			'generate_contacts' => true,
+		);
+		$generator = new TestDataGenerator();
+
+
+
+//		$begin = microtime();
+//		$people = $generator->generateMan($config['generate_users']);
+//		$speed_php = microtime() - $begin;
+//		User::model()->deleteAll();
+//		$begin = microtime();
+//		Yii::app()->db->schema->commandBuilder->createMultipleInsertCommand('user', $people)->execute();
+//		$speed_sql = microtime() - $begin;
+//		echo 'Сгенерировано '.$config['generate_users'].' ползователей <br/>';
+//		echo 'PHP - ' . $speed_php . ' ceк. MySql - ' . $speed_sql . ' сек.<br/>';
+
+
+		$begin = microtime();
+		$clients = $generator->generateClient($config['generate_clients']);
+		$speed_php = microtime() - $begin;
+		Customer::model()->deleteAll();
+		$begin = microtime();
+		Yii::app()->db->schema->commandBuilder->createMultipleInsertCommand('customer', $clients)->execute();
+		$speed_sql = microtime() - $begin;
+
+		echo 'Сгенерировано '.$config['generate_clients'].' клиентов <br/>';
+		echo 'PHP - ' . $speed_php . ' ceк. MySql - ' . $speed_sql . ' сек.<br/>';
+		if($config['generate_contacts']){
+			$begin = microtime();
+			Contact::model()->deleteAll();
+			$contacts = $generator->generateContacts();
+			$speed_php = microtime() - $begin;
+			$begin = microtime();
+			Yii::app()->db->schema->commandBuilder->createMultipleInsertCommand('contact', $contacts)->execute();
+			$speed_sql = microtime() - $begin;
+			echo 'Сгенерировано '.($config['generate_clients'] * 10).' контактов <br/>';
+			echo 'PHP - ' . $speed_php . ' ceк. MySql - ' . $speed_sql . ' сек.';
+		}
+
+
 	}
 
 	public function actionIndex()

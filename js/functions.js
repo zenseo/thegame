@@ -245,7 +245,9 @@ function loading(text) {
 	// Показываем сообщение
 	$('#loading_message').html(html);
 	// Назначаем ширину блоку загрузки примерно равную ширине контента
-	$('#loading_wrapper').css({'width':(html.length*14)+10});
+	$('#loading_wrapper').css({'width': (
+		html.length * 14
+		) + 10});
 	animateLoadingDots();
 	$('#loading_wrapper').show();
 	return true;
@@ -482,6 +484,40 @@ function saveUserRole(actionUrl, userId) {
 		}
 	};
 	simpleJson(actionUrl, data);
+}
+
+/**
+ * Обработчик кнопки вызова аяксового
+ * модального окна для просмотра записи
+ * @param button
+ */
+function gridAjaxViewButton(button) {
+	var id = button.attr("data-id");
+	var controller = button.attr("data-controller");
+	var modal_id = 'view_' + controller + '_modal';
+	simpleJson('/' + controller + '/view/' + id, {}, function () {
+		$('#' + modal_id).html(this.html);
+		showModal(modal_id);
+	});
+	return false;
+}
+
+/**
+ * Обработчик кнопки удаления записи в таблице
+ * @param button
+ */
+function gridAjaxDeleteButton(button) {
+	var id = button.attr("data-id");
+	var controller = button.attr("data-controller");
+	var grid_id = button.attr("data-grid");
+	if (confirm('Вы действительно хотите удалить эту запись?')) {
+		ajaxmessage = 'Удаление';
+		simpleJson('/' + controller + '/delete/' + id, {}, function () {
+			showMessage('success', this.message);
+			updateGrid(grid_id);
+		});
+	}
+	return false;
 }
 
 /**

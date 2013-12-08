@@ -1,9 +1,9 @@
 <?php
 /**
- * Class ContactController
+ * Class TaskController
  */
 
-class ContactController extends Controller
+class TaskController extends Controller
 {
 	/**
 	 * Отображает модель
@@ -12,33 +12,12 @@ class ContactController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$this->checkAccess('viewContact');
-		if($this->isAjax()){
-			$this->renderViewContactModal($id);
-		}
-
+		$this->checkAccess('viewTask');
 		$model = $this->loadModel($id);
 		$this->render('view', array(
 			'model' => $model,
 		));
 	}
-
-	/**
-	 * Формирует модальное окно просмотра/редактирования контактного лица
-	 * @param $id идентификатор модели
-	 */
-	public function renderViewContactModal($id){
-		$model = $this->loadModel($id);
-		$html = $this->renderPartial('modals/_view_contact_modal',array(
-			'model' => $model
-		),true);
-		echo CJSON::encode(array(
-			'status' => 200,
-			'html' => $html
-		));
-		Yii::app()->end();
-	}
-
 
 	/**
 	 * Создает новую запись в базе данных
@@ -48,19 +27,24 @@ class ContactController extends Controller
 	public function actionCreate()
 	{
 		// Проверяем можно ли совершать это действие
-		$this->checkAccess('createContact');
+		$this->checkAccess('createTask');
 		// Проверяем - пришли ли данные
 		$this->checkRequiredData(array(
-			'Contact',
+			'Task',
 		));
 		// Если нам переданы данные - начинаем обработку
-		$model = new Contact;
+		$model = new Task;
 
 		// Перегружаем свойства модели пришедшими данными и
-		$model->attributes = $_POST['Contact'];
+		$model->attributes = $_POST['Task'];
 		// пытаемся сохранить запись в базе данных
 		if ($model->save()) {
-			$this->showMessage('Контакт успешно добавлен!');
+			// Если все прошло успешно - перенаправляем пользователя
+			echo CJSON::encode(array(
+				// На страницу просмотра только что созданной записи
+				'redirect' => '/Task/' . $model->id
+			));
+			Yii::app()->end();
 		}
 		else {
 			// Если что-то пошло не так - выдаем пользователю сообщение об ошибке.
@@ -74,16 +58,16 @@ class ContactController extends Controller
 	 */
 	public function actionUpdate($id)
 	{
-		$this->checkAccess('updateContact');
+		$this->checkAccess('updateTask');
 		$this->denyNotAjax();
 		// Проверяем - пришли ли данные
 		$this->checkRequiredData(array(
-			'Contact',
+			'Task',
 		));
 		$model = $this->loadModel($id);
-		$model->attributes = $_POST['Contact'];
+		$model->attributes = $_POST['Task'];
 		if ($model->save()) {
-			$this->showMessage('Контакт успешно изменен!');
+			$this->showMessage('Task успешно изменен!');
 		}
 		else {
 			$this->throwException(CHtml::errorSummary($model), 500);
@@ -97,7 +81,7 @@ class ContactController extends Controller
 	 */
 	public function actionDelete($id = 0)
 	{
-		$this->checkAccess('deleteContact');
+		$this->checkAccess('deleteTask');
 		try {
 			// Если нам пришло много идентификаторов
 			if (isset($_REQUEST['ids']) //
@@ -105,19 +89,19 @@ class ContactController extends Controller
 				&& count($_REQUEST['ids'])
 			) {
 				// Удаляем всех
-				Contact::model()->deleteAllByAttributes(array('id' => $_REQUEST['ids']));
-				$this->showMessage('Контакты успешно удалены!');
+				Task::model()->deleteAllByAttributes(array('id' => $_REQUEST['ids']));
+				$this->showMessage('Task успешно удалены');
 			}
 			else if ($id !== 0) {
 				$this->loadModel($id)->delete();
-				$this->showMessage('Контакт успешно удален!');
+				$this->showMessage('Task успешно удален');
 			}
 			else {
 				throw new Exception('Переданы не все параметры!', 402);
 			}
 		}
 		catch (Exception $e) {
-			$this->throwException('Не удалось удалить контакт: ' . $e->getMessage(), $e->getCode());
+			$this->throwException('Не удалось удалить Task: ' . $e->getMessage(), $e->getCode());
 		}
 	}
 
@@ -127,12 +111,12 @@ class ContactController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$this->checkAccess('indexContact');
-		$model = new Contact('search');
-		$grid_id = "contact_grid";
+		$this->checkAccess('indexTask');
+		$model = new Task('search');
+		$grid_id = "task_grid";
 		$model->unsetAttributes(); // чистим дефолтные значения
-		if (isset($_GET['Contact'])) {
-			$model->attributes = $_GET['Contact'];
+		if (isset($_GET['Task'])) {
+			$model->attributes = $_GET['Task'];
 		}
 		else {
 			if (isset($_COOKIE[$grid_id])) {
@@ -150,7 +134,7 @@ class ContactController extends Controller
 
 		// Дабы JsonGrid нормально парсился рисуем его отдельно
 		if ($this->isAjax()) {
-			$this->renderPartial('grids/_super_json_grid', array(
+			$this->renderPartial('_super_json_grid', array(
 				'model' => $model,
 				'grid_id' => $grid_id,
 				'grid_data_provider' => $model->search(),
@@ -170,9 +154,6 @@ class ContactController extends Controller
 	}
 
 
-
-
-
 	/**
 	 * Возвращает данные модели, найденные по ключу
 	 * если данные модели не найдены - выдает исключение.
@@ -182,9 +163,9 @@ class ContactController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model = Contact::model()->findByPk($id);
+		$model = Task::model()->findByPk($id);
 		if ($model === null) {
-			$this->throwException('Модель класса Contact не найдена в базе данных', 404);
+			$this->throwException('Модель класса Task не найдена в базе данных', 404);
 		}
 
 		return $model;

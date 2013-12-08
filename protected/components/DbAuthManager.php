@@ -11,7 +11,7 @@ class DbAuthManager extends CDbAuthManager
 			$this->assign(Yii::app()->user->role, Yii::app()->user->id);
 		}
 		else {
-			//			Yii::app()->controller->redirect(array('site/login'));
+			Yii::app()->controller->redirect(array('site/login'));
 		}
 	}
 

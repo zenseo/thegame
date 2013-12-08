@@ -61,7 +61,6 @@ class WebUser extends CWebUser
 	 * проверяет только личные настройки доступа
 	 *
 	 * @param $action string - действие, которое проверяется
-	 * @param $params array - параметры для "Бизнес правила" в RBAC
 	 * @return boolean
 	 */
 	function checkPersonalAccess($action)

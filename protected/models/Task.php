@@ -1,14 +1,41 @@
 <?php
 
 /**
- * Это класс модели для таблицы "tableNamePlaceholder".
+ * Это класс модели для таблицы "task".
  *
- * Ниже описаны доступные поля для таблицы 'tableNamePlaceholder':
- * columnsCommentPlaceholder
+ * Ниже описаны доступные поля для таблицы 'task':
  *
- * relationsCommentPlaceholder
+ * @property integer $id Идентификатор задачи
+ * @property integer $user_id Исполнитель
+ * @property integer $customer_id Клиент
+ * @property integer $contact_id Контакт
+ * @property integer $type_id Тип
+ * @property integer $status_id Статус
+ * @property string $date_start Дата
+ * @property string $time_start Время
+ * @property integer $goal_id Цель
+ * @property string $custom_goal Своя цель
+ * @property integer $achievement Цель достигнута
+ * @property string $result Результат
+ * @property string $note Заметка
+ * @property string $created Создана
+ * @property string $updated Обновлена
+ * @property integer $creator_id Создатель
+ * @property integer $updater_id Кто обновил
+ *
+ *
+ * Ниже описаны доступные для модели зависимости:
+ * @property LogCustomer[] $logCustomers
+ * @property Customer $customer
+ * @property Contact $contact
+ * @property DictionaryTaskType $type
+ * @property DictionaryTaskGoal $goal
+ * @property DictionaryTaskStatus $status
+ * @property User $user
+ * @property User $creator
+ * @property User $updater
  */
-class ClassNamePlaceholder extends ActiveRecord
+class Task extends ActiveRecord
 {
 
 	/**
@@ -18,11 +45,11 @@ class ClassNamePlaceholder extends ActiveRecord
 	 * вместо ... => 'Просмотр карточки'
 	 */
 	public static $rbac_config = array(
-		'viewClassNamePlaceholder' => 'Просмотр карточки',
-		'indexClassNamePlaceholder' => 'Просмотр списка',
-		'createClassNamePlaceholder' => 'Создание',
-		'updateClassNamePlaceholder' => 'Обновление',
-		'deleteClassNamePlaceholder' => 'Удаление',
+		'viewTask' => 'Просмотр карточки',
+		'indexTask' => 'Просмотр списка',
+		'createTask' => 'Создание',
+		'updateTask' => 'Обновление',
+		'deleteTask' => 'Удаление',
 	);
 
 
@@ -31,7 +58,7 @@ class ClassNamePlaceholder extends ActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'tableNamePlaceholder';
+		return 'task';
 	}
 
 	/**
@@ -42,12 +69,26 @@ class ClassNamePlaceholder extends ActiveRecord
 		// NOTE: вам нужно лишь защитить атрибуты, которые будет вводить пользователь
 		// можете удалить лишнее
 		return array(
-			"ModelRulesPlaceholder",
+			array(
+				'user_id, customer_id, contact_id, type_id, status_id, goal_id, achievement, creator_id, updater_id',
+				'numerical',
+				'integerOnly' => true
+			),
+			array(
+				'custom_goal',
+				'length',
+				'max' => 255
+			),
+			array(
+				'date_start, time_start, result, note, created, updated',
+				'safe'
+			),
+
 
 			// Следующее правило будет использовано в search().
 			// @todo Пожалуйста удалите атрибуты, которые не должны экранироваться в поиске
 			array(
-				'SearchRulesPlaceholder',
+				'id, user_id, customer_id, contact_id, type_id, status_id, date_start, time_start, goal_id, custom_goal, achievement, result, note, created, updated, creator_id, updater_id',
 				'safe',
 				'on' => 'search'
 			),
@@ -62,7 +103,52 @@ class ClassNamePlaceholder extends ActiveRecord
 		// NOTE: возможно вам нужно настроить эти зависимости.
 		// Классы для зависимостей были сгенерированы автоматически! Проверьте их наличие.
 		return array(
-			"RelationRulesPlaceholder"
+			'logCustomers' => array(
+				self::HAS_MANY,
+				'LogCustomer',
+				'task_id'
+			),
+			'customer' => array(
+				self::BELONGS_TO,
+				'Customer',
+				'customer_id'
+			),
+			'contact' => array(
+				self::BELONGS_TO,
+				'Contact',
+				'contact_id'
+			),
+			'user' => array(
+				self::BELONGS_TO,
+				'User',
+				'user_id'
+			),
+			'type' => array(
+				self::BELONGS_TO,
+				'DictionaryTaskType',
+				'type_id'
+			),
+			'goal' => array(
+				self::BELONGS_TO,
+				'DictionaryTaskGoal',
+				'goal_id'
+			),
+			'status' => array(
+				self::BELONGS_TO,
+				'DictionaryTaskStatus',
+				'status_id'
+			),
+			'creator' => array(
+				self::BELONGS_TO,
+				'User',
+				'creator_id'
+			),
+			'updater' => array(
+				self::BELONGS_TO,
+				'User',
+				'updater_id'
+			),
+
 		);
 	}
 
@@ -72,7 +158,24 @@ class ClassNamePlaceholder extends ActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			"AttributeLabelsPlaceholder"
+			'id' => 'Идентификатор задачи',
+			'user_id' => 'Исполнитель',
+			'customer_id' => 'Клиент',
+			'contact_id' => 'Контакт',
+			'type_id' => 'Тип',
+			'status_id' => 'Статус',
+			'date_start' => 'Дата',
+			'time_start' => 'Время',
+			'goal_id' => 'Цель',
+			'custom_goal' => 'Своя цель',
+			'achievement' => 'Цель достигнута',
+			'result' => 'Результат',
+			'note' => 'Заметка',
+			'created' => 'Создана',
+			'updated' => 'Обновлена',
+			'creator_id' => 'Создатель',
+			'updater_id' => 'Кто обновил',
+
 		);
 	}
 
@@ -82,7 +185,23 @@ class ClassNamePlaceholder extends ActiveRecord
 	public function attributeDefault()
 	{
 		return array(
-			"AttributeDefaultPlaceholder"
+			'id',
+			'user_id',
+			'customer_id',
+			'contact_id',
+			'type_id',
+			'status_id',
+			'date_start',
+			'time_start',
+			'goal_id',
+			'custom_goal',
+			'achievement',
+			'result',
+			'note',
+			'created',
+			'updated',
+			'creator_id',
+			'updater_id',
 		);
 	}
 
@@ -95,7 +214,10 @@ class ClassNamePlaceholder extends ActiveRecord
 	 *
 	 */
 	public $dates_for_convert = array(
-		"DatesForConvert"
+		'date_start',
+		'created',
+		'updated',
+
 	);
 
 	/**
@@ -159,7 +281,21 @@ class ClassNamePlaceholder extends ActiveRecord
 	public function search()
 	{
 		$criteria = new CDbCriteria;
-		"SearchPlaceholder";
+		$criteria->compare('id', $this->id);
+		$criteria->compare('user_id', $this->user_id);
+		$criteria->compare('customer_id', $this->customer_id);
+		$criteria->compare('contact_id', $this->contact_id);
+		$criteria->compare('type_id', $this->type_id);
+		$criteria->compare('status_id', $this->status_id);
+		$criteria->compare('time_start', $this->time_start, true);
+		$criteria->compare('goal_id', $this->goal_id);
+		$criteria->compare('custom_goal', $this->custom_goal, true);
+		$criteria->compare('achievement', $this->achievement);
+		$criteria->compare('result', $this->result, true);
+		$criteria->compare('note', $this->note, true);
+		$criteria->compare('creator_id', $this->creator_id);
+		$criteria->compare('updater_id', $this->updater_id);
+
 
 		// Автоматическое добавление поиска по датам на основе
 		// массива $this->dates_for_convert
@@ -200,7 +336,7 @@ class ClassNamePlaceholder extends ActiveRecord
 	 * Обратите внимание, что вы должны иметь этот метод во всех ваших CActiveRecord потомках!
 	 *
 	 * @param string $className имя класса активной записи.
-	 * @return ClassNamePlaceholder статический класс модели
+	 * @return Task статический класс модели
 	 */
 	public static function model($className = __CLASS__)
 	{
@@ -218,7 +354,7 @@ class ClassNamePlaceholder extends ActiveRecord
 	}
 
 
-	public $alternateConnectPlaceholder;
+	// =)
 
 
 	/**
@@ -250,10 +386,10 @@ class ClassNamePlaceholder extends ActiveRecord
 	 */
 	public function getGridFunctionsButtons()
 	{
-		$view_button = '<a class="dashed" href="#" data-id="' . $this->id . '" data-controller="LowerCNPlaceholder" onclick="gridAjaxViewButton($(this));return false;">Просмотр</a>';
-		$delete_button = '<a class="dashed text-error" href="#" data-id="' . $this->id . '" data-controller="LowerCNPlaceholder" data-grid="LowerCNPlaceholder_grid" onclick="gridAjaxDeleteButton($(this));return false;">Удалить</a>';
+		$view_button = '<a class="dashed" href="#" data-id="' . $this->id . '" data-controller="task" onclick="gridAjaxViewButton($(this));return false;">Просмотр</a>';
+		$delete_button = '<a class="dashed text-error" href="#" data-id="' . $this->id . '" data-controller="task" data-grid="task_grid" onclick="gridAjaxDeleteButton($(this));return false;">Удалить</a>';
 
-		return $view_button.'<br/>'.$delete_button;
+		return $view_button . '<br/>' . $delete_button;
 	}
 
 
@@ -356,12 +492,29 @@ class ClassNamePlaceholder extends ActiveRecord
 			'main' => array(
 				'label' => 'Основные',
 				'childs' => array(
-					"AttributeDefaultPlaceholder"
+					'id',
+					'user_id',
+					'customer_id',
+					'type_id',
+					'status_id',
+					'date_start',
+					'time_start',
+					'goal_id',
+					'achievement'
 				)
 			),
 			'other' => array(
 				'label' => 'Прочие',
-				'childs' => array()
+				'childs' => array(
+					'contact_id',
+					'custom_goal',
+					'result',
+					'note',
+					'created',
+					'updated',
+					'creator_id',
+					'updater_id'
+				)
 			)
 		);
 	}

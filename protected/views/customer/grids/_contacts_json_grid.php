@@ -6,7 +6,7 @@
  */
 $this->widget("SuperJsonGrid", array(
 	"id" => $grid_id,
-	"ajaxUrl" => '/customer/contactsGrid/'.$customer_id,
+	"ajaxUrl" => '/customer/contactsGrid/' . $customer_id,
 	"dataProvider" => $grid_data_provider,
 	"enablePagination" => false,
 	"toolbarButtons" => array(
@@ -31,9 +31,9 @@ $this->widget("SuperJsonGrid", array(
 	),
 	"summaryText" => "Контакты {start} &#151; {end} из {count}",
 	"checkboxColumn" => array(
-		"class" => "customer_contacts_grid_checkbox_column",
+		"class" => "grid_checkbox_column",
 		"main_checkbox_id" => "client_contacts_table_main_checkbox",
 	),
 	"afterAjaxUpdate" => "function(){}",
-	"columns" => $columns,
+	"columns" => $columns
 ));

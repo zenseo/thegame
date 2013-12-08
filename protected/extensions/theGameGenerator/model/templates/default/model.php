@@ -55,6 +55,10 @@ if (!empty($relations)) {
 $markers[] = 'ClassNamePlaceholder';
 $data[] = $modelClass;
 
+// Имя класса в нижнем регистре
+$markers[] = 'LowerCNPlaceholder';
+$data[] = strtolower($modelClass);
+
 // Базовый класс
 $markers[] = 'BaseClassNamePlaceholder';
 $data[] = $this->baseClass;

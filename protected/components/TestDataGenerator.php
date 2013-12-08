@@ -1,5 +1,5 @@
 <?php
-class ManGenerator
+class TestDataGenerator
 {
 
 	public function generateMan($how_many = 1)
@@ -51,6 +51,66 @@ class ManGenerator
 			$man['password'] = '96e79218965eb72c92a549dd5a330112';
 			$man['status'] = rand(1, 5);
 			$result[] = $man;
+		}
+
+		return $result;
+	}
+
+
+	/**
+	 * Формирует массив данных для набивки базы тестовыми контактными лицами
+	 * @return array
+	 */
+	public function generateContacts()
+	{
+		$result = array();
+		$max_man_index = count($this->names_man) - 1;
+		$max_woman_index = count($this->names_woman) - 1;
+		$clients = Customer::model()->findAll();
+		foreach($clients as $client){
+			for ($i = 0; $i < 10; $i++) {
+				$man = array();
+				$rand = rand(9000000000, 9999999999);
+
+				if ($i % 2) {
+					$man['firstname'] = $this->names_man[rand(0, $max_man_index)];
+					$man['lastname'] = $this->names_man[rand(0, $max_man_index)] . 'ов';
+					$man['surename'] = $this->names_man[rand(0, $max_man_index)] . 'ич';
+				}
+				else {
+					$man['firstname'] = $this->names_woman[rand(0, $max_woman_index)];
+					$man['lastname'] = $this->names_man[rand(0, $max_man_index)] . 'ова';
+					$man['surename'] = $this->names_man[rand(0, $max_man_index)] . 'вна';
+				}
+				$man['phone'] = '+7' . $rand;
+				$man['customer_id'] = $client->id;
+				$result[] = $man;
+			}
+
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Формирует массив данных для набивки базы тестовыми клиентами
+	 * @param int $how_many сколько нужно сгенерировать клиентов
+	 * @return array данные для мультиинсерта в базу
+	 */
+	public function generateClient($how_many = 1)
+	{
+		if (!is_integer($how_many)) {
+			return;
+		}
+		$result = array();
+		for ($i = 0; $i < $how_many; $i++) {
+			$client = array();
+			$client['name'] = 'Тестовый клиент №'.$i;
+			$client['phone'] = '+'.(79132229900+$i);
+			$client['email'] = 'companyemail'.$i.'@gmail.com';
+			$client['in_work'] = 1;
+			$client['in_work'] = 1;
+			$result[] = $client;
 		}
 
 		return $result;
