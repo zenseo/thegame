@@ -21,7 +21,7 @@ $markers[] = 'LowerMClass';
 $data[] = strtolower($this->modelClass);
 
 // Загружаем шаблончик
-$tpl = file_get_contents(dirname(__FILE__).'/tpl/_super_json_grid.php');
+$tpl = file_get_contents(dirname(__FILE__) . '/tpl/_super_json_grid.php');
 
 // Замещаем маркеры и выводим зрителям =)
 echo str_replace($markers, $data, $tpl);

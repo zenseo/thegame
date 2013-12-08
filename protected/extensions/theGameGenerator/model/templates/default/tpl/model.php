@@ -253,7 +253,7 @@ class ClassNamePlaceholder extends ActiveRecord
 		$view_button = '<a class="dashed" href="#" data-id="' . $this->id . '" data-controller="LowerCNPlaceholder" onclick="gridAjaxViewButton($(this));return false;">Просмотр</a>';
 		$delete_button = '<a class="dashed text-error" href="#" data-id="' . $this->id . '" data-controller="LowerCNPlaceholder" data-grid="LowerCNPlaceholder_grid" onclick="gridAjaxDeleteButton($(this));return false;">Удалить</a>';
 
-		return $view_button.'<br/>'.$delete_button;
+		return $view_button . '<br/>' . $delete_button;
 	}
 
 

@@ -25,7 +25,7 @@ $markers[] = 'LowerCClass';
 $data[] = strtolower($this->controllerClass);
 
 // Загружаем шаблончик
-$tpl = file_get_contents(dirname(__FILE__).'/tpl/view.php');
+$tpl = file_get_contents(dirname(__FILE__) . '/tpl/view.php');
 
 // Замещаем маркеры и выводим зрителям =)
 echo str_replace($markers, $data, $tpl);

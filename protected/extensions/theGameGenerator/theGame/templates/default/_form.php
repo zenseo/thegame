@@ -37,7 +37,7 @@ $data[] = $BootstrapForm;
 
 
 // Загружаем шаблончик
-$tpl = file_get_contents(dirname(__FILE__).'/tpl/_form.php');
+$tpl = file_get_contents(dirname(__FILE__) . '/tpl/_form.php');
 
 // Замещаем маркеры и выводим зрителям =)
 echo str_replace($markers, $data, $tpl);
